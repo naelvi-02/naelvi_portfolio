@@ -4,6 +4,7 @@ import '@/styles/components.css'
 import '@/styles/animations.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import ScrollReveal from '@/components/layout/ScrollReveal'
 
 export const metadata: Metadata = {
   title: {
@@ -48,6 +49,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <ScrollReveal />
       </body>
     </html>
   )
