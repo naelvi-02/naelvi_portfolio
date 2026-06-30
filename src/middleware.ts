@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyToken } from '@/lib/auth'
+import { jwtVerify } from 'jose'
 
 const COOKIE_NAME = process.env.ADMIN_COOKIE_NAME ?? 'naelvi_admin'
+const SECRET_KEY = new TextEncoder().encode(
+  process.env.JWT_SECRET ?? 'dev-secret-change-in-production-minimum-32chars'
+)
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Protect all /admin/* except /admin/login
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
     const token = request.cookies.get(COOKIE_NAME)?.value
 
@@ -14,10 +16,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/admin/login', request.url))
     }
 
-    const payload = await verifyToken(token)
-
-    if (!payload) {
-      // Token invalid/expired → clear cookie and redirect
+    try {
+      await jwtVerify(token, SECRET_KEY)
+    } catch {
       const response = NextResponse.redirect(new URL('/admin/login', request.url))
       response.cookies.delete(COOKIE_NAME)
       return response
