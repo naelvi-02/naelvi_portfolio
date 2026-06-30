@@ -52,42 +52,31 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
           </div>
         )}
 
-        {/* Hover overlay */}
-        <div className="proj-card__overlay" aria-hidden="true">
-          <div className="proj-card__overlay-top">
-            <span className={`badge ${categoryClass}`}>
-              {getCategoryLabel(project.category)}
-            </span>
+        {/* Hover Marquee */}
+        <div className="proj-card__marquee-wrap" aria-hidden="true">
+          <div className="proj-card__marquee">
+            <span className="proj-card__marquee-text">{project.title} • {project.title} • {project.title} • </span>
+            <span className="proj-card__marquee-text">{project.title} • {project.title} • {project.title} • </span>
           </div>
-          <div className="proj-card__overlay-body">
-            <h3 className="proj-card__overlay-title">{project.title}</h3>
-            {project.client && (
-              <p className="proj-card__overlay-client">{project.client}</p>
-            )}
-            {project.tools.length > 0 && (
-              <p className="proj-card__overlay-tools">
-                {project.tools.slice(0, 3).join(' · ')}
-              </p>
-            )}
-          </div>
-          {/* Action hint */}
-          <div className="proj-card__action">
-            {project.category === 'design' && (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                <path d="M15 3h6v6M14 10l6.1-6.1M9 21H3v-6M10 14l-6.1 6.1"/>
-              </svg>
-            )}
-            {project.category === 'video' && (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <polygon points="5 3 19 12 5 21 5 3"/>
-              </svg>
-            )}
-            {project.category === 'app' && (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-              </svg>
-            )}
-          </div>
+        </div>
+
+        {/* Action hint */}
+        <div className="proj-card__action" aria-hidden="true">
+          {project.category === 'design' && (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M15 3h6v6M14 10l6.1-6.1M9 21H3v-6M10 14l-6.1 6.1"/>
+            </svg>
+          )}
+          {project.category === 'video' && (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+          )}
+          {project.category === 'app' && (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          )}
         </div>
 
         {/* Video play badge */}
@@ -118,20 +107,21 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
         .proj-card {
           display: block;
           background: var(--bg-card);
-          border: 1px solid var(--border);
+          border: 2px solid var(--border);
           border-radius: var(--radius-md);
           overflow: hidden;
           cursor: pointer;
+          position: relative;
           transition:
-            transform var(--duration-base) var(--ease-out),
-            border-color var(--duration-base) var(--ease-out),
-            box-shadow var(--duration-base) var(--ease-out);
+            transform var(--duration-fast) var(--ease-out),
+            border-color var(--duration-fast) var(--ease-out),
+            box-shadow var(--duration-fast) var(--ease-out);
         }
 
         .proj-card:hover {
-          transform: translateY(-4px);
-          border-color: var(--border-accent);
-          box-shadow: 0 12px 40px rgba(0,0,0,0.4), var(--accent-glow);
+          transform: translate(-4px, -4px);
+          border-color: var(--accent);
+          box-shadow: var(--shadow-brutal-hover);
         }
 
         .proj-card:focus-visible {
@@ -143,15 +133,25 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
           position: relative;
           overflow: hidden;
           background: var(--bg-elevated);
+          border-bottom: 2px solid var(--border);
+          transition: border-color var(--duration-fast);
+        }
+        
+        .proj-card:hover .proj-card__thumb {
+          border-color: var(--accent);
         }
 
         .proj-card__img {
           object-fit: cover;
-          transition: transform var(--duration-slow) var(--ease-out);
+          filter: grayscale(1) contrast(1.2);
+          opacity: 0.7;
+          transition: transform var(--duration-slow) var(--ease-out), filter var(--duration-base), opacity var(--duration-base);
         }
 
         .proj-card:hover .proj-card__img {
           transform: scale(1.05);
+          filter: grayscale(0) contrast(1);
+          opacity: 1;
         }
 
         .proj-card__placeholder {
@@ -171,71 +171,65 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
           text-transform: uppercase;
         }
 
-        .proj-card__play-icon {
-          position: absolute;
-          color: var(--border);
-        }
-
-        .proj-card__overlay {
+        /* Marquee */
+        .proj-card__marquee-wrap {
           position: absolute;
           inset: 0;
-          background: var(--bg-overlay);
           display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          padding: var(--space-3);
+          align-items: center;
+          overflow: hidden;
           opacity: 0;
+          background: rgba(0, 227, 230, 0.85); /* Cyan overlay */
           transition: opacity var(--duration-base) var(--ease-out);
+          z-index: 2;
         }
 
-        .proj-card:hover .proj-card__overlay {
+        .proj-card:hover .proj-card__marquee-wrap {
           opacity: 1;
         }
 
-        .proj-card__overlay-top {
+        .proj-card__marquee {
           display: flex;
-          justify-content: flex-end;
+          white-space: nowrap;
+          animation: marquee 8s linear infinite;
         }
 
-        .proj-card__overlay-body {
-          display: flex;
-          flex-direction: column;
-          gap: 3px;
-        }
-
-        .proj-card__overlay-title {
+        .proj-card__marquee-text {
           font-family: var(--font-display);
-          font-size: var(--text-base);
-          font-weight: 700;
-          color: var(--text-primary);
-          line-height: 1.2;
+          font-size: 3rem;
+          font-weight: 900;
+          text-transform: uppercase;
+          color: #0A0F1C;
+          padding: 0 20px;
         }
 
-        .proj-card__overlay-client {
-          font-size: var(--text-xs);
-          color: var(--text-secondary);
-        }
-
-        .proj-card__overlay-tools {
-          font-family: var(--font-mono);
-          font-size: var(--text-xs);
-          color: var(--accent);
-          opacity: 0.8;
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
 
         .proj-card__action {
           position: absolute;
           top: var(--space-3);
           left: var(--space-3);
-          width: 32px;
-          height: 32px;
-          border: 1px solid var(--border-accent);
+          width: 36px;
+          height: 36px;
+          border: 2px solid var(--accent);
           border-radius: var(--radius-sm);
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--accent);
-          background: var(--accent-dim);
+          color: #0A0F1C;
+          background: var(--accent);
+          z-index: 3;
+          opacity: 0;
+          transform: translateY(-10px);
+          transition: opacity var(--duration-base), transform var(--duration-base);
+        }
+        
+        .proj-card:hover .proj-card__action {
+          opacity: 1;
+          transform: translateY(0);
         }
 
         .proj-card__video-badge {
@@ -244,13 +238,14 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
           right: var(--space-2);
           width: 28px;
           height: 28px;
-          background: rgba(0,0,0,0.6);
+          background: rgba(0,0,0,0.8);
           border-radius: var(--radius-sm);
           display: flex;
           align-items: center;
           justify-content: center;
           color: white;
           font-size: 10px;
+          z-index: 3;
         }
 
         .proj-card__info {
@@ -279,6 +274,11 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
           font-weight: 700;
           color: var(--text-primary);
           line-height: 1.3;
+          transition: color var(--duration-fast);
+        }
+        
+        .proj-card:hover .proj-card__title {
+          color: var(--accent);
         }
 
         .proj-card__client {
@@ -286,9 +286,17 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
           color: var(--text-secondary);
         }
 
-        /* Mobile: no hover overlay, show info always */
+        /* Mobile adjustments */
         @media (hover: none) {
-          .proj-card__overlay {
+          .proj-card__img {
+            filter: grayscale(0) contrast(1);
+            opacity: 1;
+          }
+          .proj-card__action {
+            opacity: 1;
+            transform: none;
+          }
+          .proj-card__marquee-wrap {
             display: none;
           }
         }

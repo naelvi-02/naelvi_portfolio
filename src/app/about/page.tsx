@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { getContentMany } from '@/lib/content'
+import AboutHero from '@/components/about/AboutHero'
 
 export const metadata: Metadata = {
   title: 'About',
@@ -35,27 +36,7 @@ export default async function AboutPage() {
   return (
     <div className="page-enter" style={{ paddingTop: 'var(--nav-height)' }}>
       {/* Hero strip */}
-      <section className="about-hero">
-        <div className="container about-hero__inner">
-          <div className="about-hero__text">
-            <div className="about-hero__pre">
-              <span className="about-hero__line" aria-hidden="true" />
-              <span className="about-hero__pre-label">About me</span>
-            </div>
-            <h1 className="about-hero__name">Naufal Abdullah Almahdi</h1>
-            <p className="about-hero__role">{content.about_tagline}</p>
-            <p className="about-hero__location">{content.about_location}</p>
-          </div>
-
-          {/* Photo placeholder — replace with actual photo */}
-          <div className="about-hero__photo-wrap">
-            <div className="about-hero__photo" aria-label="Photo of Naufal Abdullah Almahdi">
-              <span className="about-hero__photo-initials">NA</span>
-            </div>
-            <div className="about-hero__photo-ornament" aria-hidden="true" />
-          </div>
-        </div>
-      </section>
+      <AboutHero tagline={content.about_tagline || ''} location={content.about_location || ''} />
 
       {/* Bio */}
       <section className="section section--sm about-bio" data-animate>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { useMouseParallax } from '@/hooks/useMouseParallax'
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&'
 const TARGET = 'NAELVI'
@@ -38,6 +39,7 @@ function scramble(
 
 export default function Hero() {
   const nameRef = useRef<HTMLSpanElement>(null)
+  const offset = useMouseParallax(30)
 
   useEffect(() => {
     const el = nameRef.current
@@ -53,7 +55,11 @@ export default function Hero() {
   return (
     <section className="hero" aria-label="Hero section">
       {/* Geometric ornament */}
-      <div className="hero__geo" aria-hidden="true">
+      <div 
+        className="hero__geo" 
+        aria-hidden="true"
+        style={{ transform: `translate3d(${offset.x * 0.5}px, ${offset.y * 0.5 - 50}%, 0)` }}
+      >
         <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="geo-sphere">
           <circle cx="200" cy="200" r="196" stroke="white" strokeWidth="0.4" strokeDasharray="3 6" />
           <circle cx="200" cy="200" r="140" stroke="white" strokeWidth="0.4" />
@@ -71,7 +77,10 @@ export default function Hero() {
       <div className="hero__corner hero__corner--br" aria-hidden="true" />
 
       <div className="container hero__content">
-        <div className="hero__text">
+        <div 
+          className="hero__text"
+          style={{ transform: `translate3d(${-offset.x}px, ${-offset.y}px, 0)` }}
+        >
           {/* Pre-label */}
           <div className="hero__pre hero-text-reveal" aria-hidden="true">
             <span className="hero__pre-line" />
@@ -82,7 +91,7 @@ export default function Hero() {
           <h1 className="hero__name">
             <span
               ref={nameRef}
-              className="hero__name-text cursor-blink"
+              className="hero__name-text cursor-blink outline-text"
               data-text="NAELVI"
               aria-label="NAELVI"
             >

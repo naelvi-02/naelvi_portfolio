@@ -5,8 +5,10 @@ import '@/styles/animations.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import ScrollReveal from '@/components/layout/ScrollReveal'
+import CustomCursor from '@/components/layout/CustomCursor'
 
 export const metadata: Metadata = {
+
   title: {
     default: 'Naelvi — Graphic Designer & AI Specialist',
     template: '%s | Naelvi',
@@ -50,6 +52,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <ScrollReveal />
+        <CustomCursor />
       </body>
     </html>
   )
