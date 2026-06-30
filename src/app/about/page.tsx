@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getContentMany } from '@/lib/content'
 
 export const metadata: Metadata = {
   title: 'About',
@@ -10,28 +11,26 @@ const experience = [
   { year: '2024',       company: 'Hana Creative Studio',       role: 'Canva Template Creator (Freelance)' },
   { year: '2024',       company: 'Whittaker ID',               role: 'Graphic Designer' },
   { year: '2023',       company: 'Waffleboss Surabaya',        role: 'Graphic Designer' },
-  { year: '2022–2023',  company: 'Idekita Laser',              role: 'Graphic Designer' },
-  { year: '2022',       company: 'iNews TV Surabaya',          role: 'Graphic Designer' },
 ]
 
 const skills = [
-  'Brand Identity', 'Social Media Design', 'Video Editing',
-  'UI / UX', 'AI Tools', 'Photography', 'Canva Templates',
-  'Motion Graphics', 'Visual Storytelling',
+  'Ai Vibe Coding', 'Ai Content Creation', 'Social Media Design', 'Branding Design', 'Video Editing', 'Product Photography'
 ]
 
 const tools = [
-  { name: 'Photoshop',         icon: 'Ps' },
-  { name: 'Illustrator',       icon: 'Ai' },
-  { name: 'Figma',             icon: 'Fg' },
-  { name: 'Adobe Premiere',    icon: 'Pr' },
-  { name: 'CapCut',            icon: 'Cc' },
+  { name: 'Google Flow',       icon: 'Gf' },
+  { name: 'Higgsfield Ai',     icon: 'Hf' },
+  { name: 'Opencode',          icon: 'Oc' },
+  { name: 'Antigravity',       icon: 'Ag' },
+  { name: 'Adobe Photoshop',   icon: 'Ps' },
   { name: 'Canva',             icon: 'Cv' },
-  { name: 'Midjourney',        icon: 'Mj' },
-  { name: 'ChatGPT / AI',      icon: 'AI' },
+  { name: 'Figma',             icon: 'Fg' },
+  { name: 'Adobe Illustrator', icon: 'Ai' },
 ]
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const content = await getContentMany(['about_bio', 'about_tagline', 'about_location'])
+  
   return (
     <div className="page-enter" style={{ paddingTop: 'var(--nav-height)' }}>
       {/* Hero strip */}
@@ -43,8 +42,8 @@ export default function AboutPage() {
               <span className="about-hero__pre-label">About me</span>
             </div>
             <h1 className="about-hero__name">Naufal Abdullah Almahdi</h1>
-            <p className="about-hero__role">Graphic Designer <span style={{ color: 'var(--accent)' }}>&amp;</span> AI Specialist</p>
-            <p className="about-hero__location">S.I.Kom · Surabaya, Indonesia</p>
+            <p className="about-hero__role">{content.about_tagline}</p>
+            <p className="about-hero__location">{content.about_location}</p>
           </div>
 
           {/* Photo placeholder — replace with actual photo */}
@@ -64,20 +63,9 @@ export default function AboutPage() {
             <span className="badge badge-accent">Bio</span>
           </div>
           <div className="about-bio__content">
-            <p>
-              I am a <strong>Graphic Designer and AI Specialist</strong> based in Surabaya, Indonesia.
-              With over 3 years of professional experience, I craft bold visual identities, social media
-              content, and video productions for brands across various industries.
-            </p>
-            <p>
-              Under the creative persona <strong style={{ color: 'var(--accent)' }}>Naelvi</strong>,
-              I blend traditional design principles with cutting-edge AI tools to create work that is
-              both visually compelling and strategically effective.
-            </p>
-            <p>
-              Graduated with a degree in Communication Science (S.I.Kom) from Universitas Negeri Surabaya (UNESA),
-              I combine academic knowledge with practical creativity to solve real-world design challenges.
-            </p>
+            {content.about_bio?.split('\n').filter(p => p.trim() !== '').map((paragraph, i) => (
+              <p key={i}>{paragraph}</p>
+            ))}
           </div>
         </div>
       </section>

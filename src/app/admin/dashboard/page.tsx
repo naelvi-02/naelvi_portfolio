@@ -39,6 +39,8 @@ export default async function AdminDashboardPage() {
       <div style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
         <a href="/admin/projects" className="btn btn-ghost" id="dash-projects-btn">View All Projects</a>
         <a href="/admin/projects/new" className="btn btn-primary" id="dash-new-project-btn">+ New Project</a>
+        <a href="/admin/about" className="btn btn-ghost" id="dash-about-btn">Edit About</a>
+        <a href="/admin/contact" className="btn btn-ghost" id="dash-contact-btn">Edit Contact</a>
         <a href="/" className="btn btn-ghost" id="dash-view-site-btn" target="_blank" rel="noopener noreferrer">View Site ↗</a>
       </div>
     </div>

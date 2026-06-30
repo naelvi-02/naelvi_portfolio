@@ -1,81 +1,67 @@
-'use client'
+import type { Metadata } from 'next'
+import { getContentMany } from '@/lib/content'
+import ContactForm from '@/components/contact/ContactForm'
 
-import { useState, useRef } from 'react'
+export const metadata: Metadata = {
+  title: 'Contact',
+  description: 'Get in touch with Naufal Abdullah Almahdi (Naelvi).',
+}
 
-const socials = [
-  {
-    id: 'contact-whatsapp',
-    label: 'WhatsApp',
-    value: '+62 852-3695-0672',
-    href: 'https://wa.me/6285236950672',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-      </svg>
-    ),
-  },
-  {
-    id: 'contact-email',
-    label: 'Email',
-    value: 'hallo.naufal@naelvi.com',
-    href: 'mailto:hallo.naufal@naelvi.com',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="4" width="20" height="16" rx="2" /><polyline points="2,4 12,13 22,4" />
-      </svg>
-    ),
-  },
-  {
-    id: 'contact-instagram',
-    label: 'Instagram',
-    value: '@nopalnaelvi',
-    href: 'https://instagram.com/nopalnaelvi',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
-      </svg>
-    ),
-  },
-  {
-    id: 'contact-linkedin',
-    label: 'LinkedIn',
-    value: 'linkedin.com/in/naelvi',
-    href: 'https://linkedin.com/in/naelvi',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" /><rect x="2" y="9" width="4" height="12" /><circle cx="4" cy="4" r="2" />
-      </svg>
-    ),
-  },
-]
+export default async function ContactPage() {
+  const content = await getContentMany([
+    'contact_email',
+    'contact_whatsapp',
+    'contact_instagram',
+    'contact_linkedin',
+    'contact_availability'
+  ])
 
-type Status = 'idle' | 'loading' | 'success' | 'error'
-
-export default function ContactPage() {
-  const [status, setStatus] = useState<Status>('idle')
-  const [errorMsg, setErrorMsg] = useState('')
-  const formRef = useRef<HTMLFormElement>(null)
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setStatus('loading')
-    setErrorMsg('')
-
-    const form = formRef.current!
-    const data = {
-      name: (form.elements.namedItem('name') as HTMLInputElement).value,
-      email: (form.elements.namedItem('email') as HTMLInputElement).value,
-      subject: (form.elements.namedItem('subject') as HTMLInputElement).value,
-      message: (form.elements.namedItem('message') as HTMLTextAreaElement).value,
-    }
-
-    // For now: open mailto — replace with API route later
-    const mailto = `mailto:hallo.naufal@naelvi.com?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(`Name: ${data.name}\nEmail: ${data.email}\n\n${data.message}`)}`
-    window.location.href = mailto
-
-    setStatus('success')
-    form.reset()
-  }
+  const socials = [
+    {
+      id: 'contact-whatsapp',
+      label: 'WhatsApp',
+      value: content.contact_whatsapp,
+      href: `https://wa.me/${content.contact_whatsapp?.replace(/\D/g, '')}`,
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+        </svg>
+      ),
+    },
+    {
+      id: 'contact-email',
+      label: 'Email',
+      value: content.contact_email,
+      href: `mailto:${content.contact_email}`,
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2" /><polyline points="2,4 12,13 22,4" />
+        </svg>
+      ),
+    },
+    {
+      id: 'contact-instagram',
+      label: 'Instagram',
+      value: content.contact_instagram,
+      href: `https://instagram.com/${content.contact_instagram?.replace('@', '')}`,
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+        </svg>
+      ),
+    },
+    {
+      id: 'contact-linkedin',
+      label: 'LinkedIn',
+      value: content.contact_linkedin,
+      href: `https://${content.contact_linkedin}`,
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" /><rect x="2" y="9" width="4" height="12" /><circle cx="4" cy="4" r="2" />
+        </svg>
+      ),
+    },
+  ]
 
   return (
     <div className="page-enter" style={{ paddingTop: 'var(--nav-height)' }}>
@@ -123,54 +109,12 @@ export default function ContactPage() {
 
             <div className="contact-info__availability">
               <div className="contact-avail-dot" aria-hidden="true" />
-              <span>Available for freelance &amp; full-time</span>
+              <span>{content.contact_availability}</span>
             </div>
           </div>
 
           {/* Form */}
-          <form ref={formRef} onSubmit={handleSubmit} className="contact-form" noValidate>
-            <div className="form-group">
-              <label htmlFor="contact-name" className="label label-required">Name</label>
-              <input id="contact-name" name="name" type="text" className="input" placeholder="Your name" required />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="contact-email" className="label label-required">Email</label>
-              <input id="contact-email" name="email" type="email" className="input" placeholder="your@email.com" required />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="contact-subject" className="label label-required">Subject</label>
-              <input id="contact-subject" name="subject" type="text" className="input" placeholder="Project inquiry, collab, etc." required />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="contact-message" className="label label-required">Message</label>
-              <textarea id="contact-message" name="message" className="textarea" placeholder="Tell me about your project..." required rows={6} />
-            </div>
-
-            {status === 'error' && (
-              <p className="error-message">{errorMsg}</p>
-            )}
-
-            {status === 'success' && (
-              <p style={{ color: 'var(--success)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-mono)' }}>
-                ✓ Opening email client...
-              </p>
-            )}
-
-            <button
-              type="submit"
-              className="btn btn-primary"
-              id="contact-send-btn"
-              disabled={status === 'loading'}
-              style={{ width: '100%', justifyContent: 'center' }}
-            >
-              {status === 'loading' ? (
-                <><span className="spinner" aria-hidden="true" /> Sending...</>
-              ) : 'Send Message'}
-            </button>
-          </form>
+          <ContactForm emailDest={content.contact_email ?? 'hallo.naufal@naelvi.com'} />
         </div>
       </section>
 
