@@ -28,7 +28,7 @@ export default function AboutHero({ tagline, location }: AboutHeroProps) {
 
         {/* Photo placeholder — replace with actual photo */}
         <div 
-          className="about-hero__photo-wrap"
+          className="about-hero__photo-wrap texture-foil"
           style={{ transform: `translate3d(${offset.x * 1.5}px, ${offset.y * 1.5}px, 0)` }}
         >
           <div className="about-hero__photo" aria-label="Photo of Naufal Abdullah Almahdi">

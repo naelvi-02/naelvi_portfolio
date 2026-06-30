@@ -38,7 +38,7 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
             className="proj-card__img"
           />
         ) : (
-          <div className="proj-card__placeholder">
+          <div className="proj-card__placeholder texture-foil">
             <span className="proj-card__placeholder-letter">
               {project.title.charAt(0)}
             </span>
@@ -161,6 +161,10 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
           align-items: center;
           justify-content: center;
           position: relative;
+        }
+
+        .proj-card__placeholder.texture-foil::after {
+           opacity: 0.25; /* make it a bit stronger here */
         }
 
         .proj-card__placeholder-letter {
