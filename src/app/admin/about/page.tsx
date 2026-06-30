@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { getContentMany } from '@/lib/content'
 import ContentForm from '@/components/admin/ContentForm'
+import ExperienceEditor from '@/components/admin/ExperienceEditor'
 
 export default async function AdminAboutPage() {
   const session = await getSession()
@@ -23,7 +24,6 @@ export default async function AdminAboutPage() {
     { name: 'about_location', label: 'Location (e.g. Surabaya, Indonesia)', type: 'text' as const },
     { name: 'about_bio', label: 'Biography', type: 'textarea' as const },
     { name: 'about_skills', label: 'Skills (comma separated, e.g. Design, Video Editing)', type: 'textarea' as const },
-    { name: 'about_experience', label: 'Experience (1 per line, format: Year | Company | Role)', type: 'textarea' as const },
     { name: 'about_tools', label: 'Tools (1 per line, format: Icon | Name)', type: 'textarea' as const },
   ]
 
@@ -38,7 +38,19 @@ export default async function AdminAboutPage() {
         </h1>
       </div>
 
-      <ContentForm fields={fields} initialData={data} title="About Content" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
+        <section>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', marginBottom: 'var(--space-6)', paddingBottom: 'var(--space-2)', borderBottom: '1px solid var(--border)' }}>
+            General Info
+          </h2>
+          <ContentForm fields={fields} initialData={data} title="General Info" />
+        </section>
+
+        <section>
+          <ExperienceEditor initialData={data.about_experience || '[]'} />
+        </section>
+      </div>
     </div>
   )
 }
+

@@ -20,12 +20,10 @@ export default async function AboutPage() {
     ? content.about_skills.split(',').map(s => s.trim()).filter(Boolean)
     : []
 
-  const experience = content.about_experience
-    ? content.about_experience.split('\n').filter(Boolean).map(line => {
-        const [year, company, role] = line.split('|').map(s => s.trim())
-        return { year, company, role }
-      })
-    : []
+  let experience: any[] = []
+  try {
+    experience = JSON.parse(content.about_experience || '[]')
+  } catch(e) {}
 
   const tools = content.about_tools
     ? content.about_tools.split('\n').filter(Boolean).map(line => {
@@ -90,13 +88,32 @@ export default async function AboutPage() {
         <div className="container">
           <h2 className="about-section-title" data-animate>Experience</h2>
           <div className="about-exp__timeline">
-            {experience.map((exp, i) => (
+            {experience.map((exp: any, i: number) => (
               <div key={i} className="about-exp__item" data-animate data-animate-delay={String(i + 1)}>
-                <div className="about-exp__year">{exp.year}</div>
+                <div className="about-exp__year">
+                  {exp.startMonth?.slice(0, 3)} {exp.startYear} –<br/>
+                  {exp.isPresent ? 'Present' : `${exp.endMonth?.slice(0, 3)} ${exp.endYear}`}
+                </div>
                 <div className="about-exp__dot" aria-hidden="true" />
                 <div className="about-exp__details">
-                  <h3 className="about-exp__company">{exp.company}</h3>
-                  <p className="about-exp__role">{exp.role}</p>
+                  <h3 className="about-exp__company">
+                    {exp.website ? (
+                      <a href={exp.website} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>
+                        {exp.company} <span style={{ opacity: 0.5, fontSize: '0.8em' }}>↗</span>
+                      </a>
+                    ) : (
+                      exp.company
+                    )}
+                  </h3>
+                  <p className="about-exp__role">{exp.title}</p>
+                  
+                  {exp.accomplishments && exp.accomplishments.length > 0 && (
+                    <ul className="about-exp__acc">
+                      {exp.accomplishments.map((acc: string, j: number) => (
+                        <li key={j}>{acc}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             ))}
@@ -355,6 +372,31 @@ export default async function AboutPage() {
           font-size: var(--text-sm);
           color: var(--text-secondary);
           margin-top: var(--space-1);
+        }
+
+        .about-exp__acc {
+          margin-top: var(--space-3);
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-2);
+          font-size: var(--text-sm);
+          color: var(--text-secondary);
+          line-height: 1.6;
+          list-style: none;
+          padding-left: 0;
+        }
+
+        .about-exp__acc li {
+          position: relative;
+          padding-left: var(--space-4);
+        }
+
+        .about-exp__acc li::before {
+          content: "—";
+          position: absolute;
+          left: 0;
+          color: var(--accent);
+          font-weight: 700;
         }
 
         /* Education */
