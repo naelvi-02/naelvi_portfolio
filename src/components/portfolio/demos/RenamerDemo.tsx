@@ -1,137 +1,137 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Upload, FileText, CheckCircle2, ChevronRight, HardDrive } from 'lucide-react'
-
-// Mock Data
-const MOCK_DB: Record<string, { name: string; result: string }> = {
-  '89912345': { name: 'Cincin Berlian 18K', result: 'CINCIN_BERLIAN_18K_89912345.jpg' },
-  '89954321': { name: 'Kalung Emas 24K', result: 'KALUNG_EMAS_24K_89954321.jpg' }
-}
+import { FolderOpen, RefreshCw, Image as ImageIcon } from 'lucide-react'
 
 export default function RenamerDemo() {
   const [barcode, setBarcode] = useState('')
-  const [files, setFiles] = useState([
-    { id: 1, orig: 'IMG_9012.JPG', newName: '', status: 'pending' },
-    { id: 2, orig: 'IMG_9013.JPG', newName: '', status: 'pending' },
-    { id: 3, orig: 'IMG_9014.JPG', newName: '', status: 'pending' }
-  ])
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [renamed, setRenamed] = useState(false)
 
   const handleScan = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      const match = MOCK_DB[barcode]
-      if (match && currentIndex < files.length) {
-        setFiles(prev => prev.map((f, i) => 
-          i === currentIndex 
-            ? { ...f, newName: match.result, status: 'success' } 
-            : f
-        ))
-        setCurrentIndex(prev => Math.min(prev + 1, files.length - 1))
-        setBarcode('')
-      } else {
-        alert(match ? 'All files processed!' : 'Barcode not found in DB (try 89912345 or 89954321)')
-      }
+    if (e.key === 'Enter' && barcode === '32316349') {
+      setRenamed(true)
+    } else if (e.key === 'Enter') {
+      setRenamed(false)
     }
   }
 
   return (
     <div style={{
-      background: '#FDF2F5',
-      color: '#1E1B20',
+      background: '#FCE4EC',
+      color: '#1E293B',
       fontFamily: 'sans-serif',
-      borderRadius: '12px',
+      borderRadius: '8px',
       overflow: 'hidden',
-      border: '1px solid rgba(232,104,138,0.22)',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+      border: '1px solid #FBCFE8',
+      boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+      padding: '24px'
     }}>
-      {/* Header */}
-      <div style={{
-        background: '#FFFFFF',
-        padding: '16px 24px',
-        borderBottom: '1px solid rgba(232,104,138,0.22)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between'
+      <div style={{ 
+        background: '#FFFFFF', 
+        borderRadius: '8px', 
+        border: '1px solid #FBCFE8',
+        maxWidth: '1000px',
+        margin: '0 auto',
+        overflow: 'hidden'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <HardDrive color="#E8688A" size={20} />
-          <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>Smart File Renamer</h3>
-        </div>
-        <div style={{ fontSize: '12px', color: '#9E8B93', background: '#FCE4EC', padding: '4px 8px', borderRadius: '4px' }}>
-          DB Sync: Active
-        </div>
-      </div>
-
-      <div style={{ padding: '24px', display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
-        {/* Left Col */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{
-            border: '2px dashed #E8688A',
-            background: 'rgba(232,104,138,0.05)',
-            borderRadius: '8px',
-            padding: '32px 16px',
-            textAlign: 'center',
-            cursor: 'pointer'
-          }}>
-            <Upload color="#E8688A" size={32} style={{ margin: '0 auto 8px' }} />
-            <div style={{ fontWeight: 600, color: '#E8688A' }}>Upload Photos</div>
-            <div style={{ fontSize: '12px', color: '#9E8B93' }}>Drag & Drop folder</div>
-          </div>
-
+        {/* Header */}
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid #FBCFE8', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9E8B93', marginBottom: '6px' }}>
-              SCAN BARCODE (Try 89912345)
-            </label>
-            <input 
-              type="text" 
-              value={barcode}
-              onChange={e => setBarcode(e.target.value)}
-              onKeyDown={handleScan}
-              placeholder="Waiting for scanner..."
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '6px',
-                border: '1px solid #E8688A',
-                outline: 'none',
-                background: '#FFFFFF',
-                color: '#1E1B20',
-                fontWeight: 600
-              }}
-            />
+            <div style={{ color: '#E8688A', fontWeight: 'bold', fontSize: '18px' }}>Jewelry Photo Renamer Tool</div>
+            <div style={{ fontSize: '12px', color: '#94A3B8' }}>Total Database: <span style={{ fontWeight: 'bold', color: '#64748B' }}>5,352 Items</span> (Update: 30 Jun 2026, 11:44)</div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button style={{ background: '#E8688A', color: '#FFF', border: 'none', padding: '8px 16px', borderRadius: '4px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+              <FolderOpen size={16} /> Buka Folder
+            </button>
+            <button style={{ background: '#FCE4EC', color: '#E8688A', border: 'none', padding: '8px 16px', borderRadius: '4px', fontWeight: 600, fontSize: '13px' }}>
+              Sync Data
+            </button>
           </div>
         </div>
 
-        {/* Right Col */}
-        <div style={{ background: '#FFFFFF', borderRadius: '8px', border: '1px solid rgba(232,104,138,0.22)', overflow: 'hidden' }}>
-          <div style={{ background: '#FCE4EC', padding: '12px 16px', fontSize: '13px', fontWeight: 600, color: '#E8688A', borderBottom: '1px solid rgba(232,104,138,0.22)' }}>
-            Processing Queue ({currentIndex}/{files.length})
+        <div style={{ display: 'flex', padding: '24px', gap: '24px' }}>
+          {/* Left Col */}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '10px', fontWeight: 'bold', color: '#94A3B8', letterSpacing: '1px', marginBottom: '8px' }}>FOTO SAAT INI</div>
+            <div style={{ 
+              border: '2px dashed #FBCFE8', 
+              borderRadius: '8px', 
+              height: '300px', 
+              display: 'flex', 
+              flexDirection: 'column',
+              alignItems: 'center', 
+              justifyContent: 'center',
+              color: '#FBCFE8',
+              marginBottom: '16px'
+            }}>
+              <ImageIcon size={48} style={{ marginBottom: '8px' }} />
+              <div style={{ fontSize: '12px' }}>Klik "Buka Folder" untuk me-load foto</div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <div style={{ fontSize: '10px', fontWeight: 'bold', color: '#94A3B8', letterSpacing: '1px' }}>ANTREAN FOTO</div>
+              <div style={{ fontSize: '10px', fontWeight: 'bold', color: '#E8688A' }}>9 tersisa</div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {[1,2,3,4,5,6,7,8].map(i => (
+                <div key={i} style={{ width: '40px', height: '40px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '4px' }} />
+              ))}
+            </div>
           </div>
-          <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {files.map((file, i) => (
-              <div key={file.id} style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '12px',
-                background: file.status === 'success' ? '#F0FDF4' : i === currentIndex ? '#FFFBEB' : '#F8FAFC',
-                border: `1px solid ${file.status === 'success' ? '#BBF7D0' : i === currentIndex ? '#FEF3C7' : '#E2E8F0'}`,
-                borderRadius: '6px',
-                gap: '12px'
-              }}>
-                {file.status === 'success' ? <CheckCircle2 color="#16A34A" size={18} /> : <FileText color="#94A3B8" size={18} />}
-                
-                <div style={{ flex: 1, fontSize: '13px', fontFamily: 'monospace' }}>
-                  {file.orig}
+
+          {/* Right Col */}
+          <div style={{ width: '350px' }}>
+            <div style={{ fontSize: '10px', fontWeight: 'bold', color: '#94A3B8', letterSpacing: '1px', marginBottom: '8px' }}>BARCODE SCANNER</div>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+              <input 
+                type="text" 
+                placeholder="Scan barcode ..." 
+                value={barcode}
+                onChange={e => setBarcode(e.target.value)}
+                onKeyDown={handleScan}
+                style={{ flex: 1, padding: '10px', borderRadius: '4px', border: '1px solid #E8688A', outline: 'none', color: '#E8688A' }}
+              />
+              <button style={{ background: '#E8688A', color: '#FFF', border: 'none', padding: '0 16px', borderRadius: '4px', fontWeight: 'bold' }}>Enter</button>
+            </div>
+
+            <div style={{ fontSize: '10px', fontWeight: 'bold', color: '#94A3B8', letterSpacing: '1px', marginBottom: '8px' }}>DETAIL PRODUK</div>
+            <div style={{ background: '#FFF1F2', border: '1px solid #FECDD3', borderRadius: '8px', padding: '16px', marginBottom: '24px' }}>
+              <div style={{ fontSize: '10px', color: '#94A3B8', marginBottom: '4px' }}>Nama Barang</div>
+              <div style={{ fontWeight: 'bold', marginBottom: '16px' }}>{renamed ? 'Cincin Kiara Mata Hijau' : '-'}</div>
+
+              <div style={{ fontSize: '10px', color: '#94A3B8', marginBottom: '4px' }}>Barcode</div>
+              <div style={{ color: '#E8688A', background: '#FCE4EC', padding: '4px 8px', borderRadius: '4px', display: 'inline-block', fontSize: '12px', fontWeight: 'bold', marginBottom: '16px' }}>
+                {renamed ? '32316349' : '-'}
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div>
+                  <div style={{ fontSize: '10px', color: '#94A3B8', marginBottom: '4px' }}>Kadar</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{renamed ? '8K' : '-'}</div>
                 </div>
-                
-                <ChevronRight color="#94A3B8" size={14} />
-                
-                <div style={{ flex: 1, fontSize: '13px', fontFamily: 'monospace', color: file.status === 'success' ? '#16A34A' : '#94A3B8' }}>
-                  {file.newName || 'Waiting scan...'}
+                <div>
+                  <div style={{ fontSize: '10px', color: '#94A3B8', marginBottom: '4px' }}>Nampan</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{renamed ? '18' : '-'}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '10px', color: '#94A3B8', marginBottom: '4px' }}>Berat (Gram)</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{renamed ? '0,74' : '-'}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '10px', color: '#94A3B8', marginBottom: '4px' }}>Ukuran (Size)</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '13px' }}>{renamed ? '15' : '-'}</div>
                 </div>
               </div>
-            ))}
+            </div>
+
+            <div style={{ fontSize: '10px', fontWeight: 'bold', color: '#94A3B8', letterSpacing: '1px', marginBottom: '8px' }}>AUTO-RENAMED AS</div>
+            <div style={{ background: '#FCE4EC', border: '1px dashed #E8688A', borderRadius: '8px', padding: '16px' }}>
+              <div style={{ background: '#FFF', padding: '12px', borderRadius: '4px', fontWeight: 'bold', fontSize: '13px', border: '1px solid #FBCFE8' }}>
+                {renamed ? 'Cincin Kiara Mata Hijau 32316349 8K 16' : ''}
+              </div>
+            </div>
+            
           </div>
         </div>
       </div>
