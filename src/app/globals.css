@@ -117,6 +117,9 @@
   color: var(--accent);
   -webkit-text-stroke: 0px transparent;
 }
+
+/* ============================================================
+   CUSTOM CURSOR
    ============================================================ */
 @media (pointer: fine) {
   body {
