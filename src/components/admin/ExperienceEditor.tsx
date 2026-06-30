@@ -225,6 +225,38 @@ export default function ExperienceEditor({ initialData }: { initialData: string 
         ))}
       </div>
 
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
+        <button 
+          onClick={handleAdd} 
+          type="button"
+          style={{ 
+            width: '100%', 
+            padding: '16px', 
+            background: 'transparent', 
+            border: '2px dashed var(--border-accent)', 
+            borderRadius: 'var(--radius-md)',
+            color: 'var(--text-primary)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: 'var(--text-sm)',
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'all var(--duration-fast)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'var(--accent)'
+            e.currentTarget.style.color = 'var(--accent)'
+            e.currentTarget.style.background = 'var(--bg-elevated)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'var(--border-accent)'
+            e.currentTarget.style.color = 'var(--text-primary)'
+            e.currentTarget.style.background = 'transparent'
+          }}
+        >
+          + ADD NEW EXPERIENCE
+        </button>
+      </div>
+
       <div className="exp-actions">
         {error && <p className="text-error">{error}</p>}
         {success && <p className="text-success">✓ {success}</p>}
