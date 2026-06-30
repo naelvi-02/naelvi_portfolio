@@ -53,7 +53,7 @@ export default function Hero() {
   }, [])
 
   return (
-    <section className="hero" aria-label="Hero section">
+    <section className="hero bg-foil" aria-label="Hero section">
       {/* Geometric ornament */}
       <div 
         className="hero__geo" 

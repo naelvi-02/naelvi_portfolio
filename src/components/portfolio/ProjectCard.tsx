@@ -28,7 +28,7 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
       id={`project-card-${project.slug}`}
     >
       {/* Thumbnail */}
-      <div className="proj-card__thumb texture-foil" style={{ aspectRatio }}>
+      <div className="proj-card__thumb" style={{ aspectRatio }}>
         {project.thumbnail ? (
           <Image
             src={project.thumbnail}
@@ -139,11 +139,6 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
         
         .proj-card:hover .proj-card__thumb {
           border-color: var(--accent);
-        }
-
-        .proj-card__thumb.texture-foil::after {
-          opacity: 0.4;
-          mix-blend-mode: color-dodge; /* Better blend for images */
         }
 
         .proj-card__img {

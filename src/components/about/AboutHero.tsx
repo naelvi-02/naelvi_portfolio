@@ -11,7 +11,7 @@ export default function AboutHero({ tagline, location }: AboutHeroProps) {
   const offset = useMouseParallax(20)
 
   return (
-    <section className="about-hero">
+    <section className="about-hero bg-foil">
       <div 
         className="container about-hero__inner"
         style={{ transform: `translate3d(${-offset.x}px, ${-offset.y}px, 0)` }}
@@ -28,7 +28,7 @@ export default function AboutHero({ tagline, location }: AboutHeroProps) {
 
         {/* Photo placeholder — replace with actual photo */}
         <div 
-          className="about-hero__photo-wrap texture-foil"
+          className="about-hero__photo-wrap"
           style={{ transform: `translate3d(${offset.x * 1.5}px, ${offset.y * 1.5}px, 0)` }}
         >
           <div className="about-hero__photo" aria-label="Photo of Naufal Abdullah Almahdi">
