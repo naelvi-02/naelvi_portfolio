@@ -6,31 +6,34 @@ export const metadata: Metadata = {
   description: 'About Naufal Abdullah Almahdi (Naelvi) — Graphic Designer & AI Specialist based in Surabaya.',
 }
 
-const experience = [
-  { year: '2025 – Now', company: 'CV. Wahyu Golden Indonesia', role: 'Graphic Designer & Photographer' },
-  { year: '2024',       company: 'Hana Creative Studio',       role: 'Canva Template Creator (Freelance)' },
-  { year: '2024',       company: 'Whittaker ID',               role: 'Graphic Designer' },
-  { year: '2023',       company: 'Waffleboss Surabaya',        role: 'Graphic Designer' },
-]
-
-const skills = [
-  'Ai Vibe Coding', 'Ai Content Creation', 'Social Media Design', 'Branding Design', 'Video Editing', 'Product Photography'
-]
-
-const tools = [
-  { name: 'Google Flow',       icon: 'Gf' },
-  { name: 'Higgsfield Ai',     icon: 'Hf' },
-  { name: 'Opencode',          icon: 'Oc' },
-  { name: 'Antigravity',       icon: 'Ag' },
-  { name: 'Adobe Photoshop',   icon: 'Ps' },
-  { name: 'Canva',             icon: 'Cv' },
-  { name: 'Figma',             icon: 'Fg' },
-  { name: 'Adobe Illustrator', icon: 'Ai' },
-]
-
 export default async function AboutPage() {
-  const content = await getContentMany(['about_bio', 'about_tagline', 'about_location'])
+  const content = await getContentMany([
+    'about_bio',
+    'about_tagline',
+    'about_location',
+    'about_experience',
+    'about_skills',
+    'about_tools'
+  ])
   
+  const skills = content.about_skills
+    ? content.about_skills.split(',').map(s => s.trim()).filter(Boolean)
+    : []
+
+  const experience = content.about_experience
+    ? content.about_experience.split('\n').filter(Boolean).map(line => {
+        const [year, company, role] = line.split('|').map(s => s.trim())
+        return { year, company, role }
+      })
+    : []
+
+  const tools = content.about_tools
+    ? content.about_tools.split('\n').filter(Boolean).map(line => {
+        const [icon, name] = line.split('|').map(s => s.trim())
+        return { icon, name }
+      })
+    : []
+
   return (
     <div className="page-enter" style={{ paddingTop: 'var(--nav-height)' }}>
       {/* Hero strip */}

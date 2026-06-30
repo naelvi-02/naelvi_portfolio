@@ -8,13 +8,23 @@ export default async function AdminAboutPage() {
   const session = await getSession()
   if (!session) redirect('/admin/login')
 
-  const keys = ['about_bio', 'about_tagline', 'about_location']
+  const keys = [
+    'about_bio',
+    'about_tagline',
+    'about_location',
+    'about_experience',
+    'about_skills',
+    'about_tools'
+  ]
   const data = await getContentMany(keys)
 
   const fields = [
     { name: 'about_tagline', label: 'Tagline (e.g. Graphic Designer & AI Specialist)', type: 'text' as const },
     { name: 'about_location', label: 'Location (e.g. Surabaya, Indonesia)', type: 'text' as const },
     { name: 'about_bio', label: 'Biography', type: 'textarea' as const },
+    { name: 'about_skills', label: 'Skills (comma separated, e.g. Design, Video Editing)', type: 'textarea' as const },
+    { name: 'about_experience', label: 'Experience (1 per line, format: Year | Company | Role)', type: 'textarea' as const },
+    { name: 'about_tools', label: 'Tools (1 per line, format: Icon | Name)', type: 'textarea' as const },
   ]
 
   return (
