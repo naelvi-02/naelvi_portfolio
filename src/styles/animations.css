@@ -1,0 +1,246 @@
+/* ============================================================
+   ANIMATIONS.CSS — Keyframes, Marquee, Scroll reveals
+   ============================================================ */
+
+/* ============================================================
+   MARQUEE
+   ============================================================ */
+.marquee-wrapper {
+  overflow: hidden;
+  width: 100%;
+  white-space: nowrap;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding-block: var(--space-3);
+  background: var(--bg-secondary);
+}
+
+.marquee-track {
+  display: inline-flex;
+  gap: var(--space-8);
+  animation: marquee 30s linear infinite;
+}
+
+.marquee-wrapper:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+.marquee-item {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.marquee-item--accent {
+  color: var(--accent);
+}
+
+.marquee-sep {
+  width: 4px;
+  height: 4px;
+  background: var(--accent);
+  border-radius: 50%;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ============================================================
+   PAGE TRANSITIONS
+   ============================================================ */
+.page-enter {
+  animation: page-in var(--duration-slow) var(--ease-out);
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+[data-animate] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.5s var(--ease-out),
+    transform 0.5s var(--ease-out);
+}
+
+[data-animate].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+[data-animate-delay="1"] { transition-delay: 50ms; }
+[data-animate-delay="2"] { transition-delay: 100ms; }
+[data-animate-delay="3"] { transition-delay: 150ms; }
+[data-animate-delay="4"] { transition-delay: 200ms; }
+[data-animate-delay="5"] { transition-delay: 250ms; }
+[data-animate-delay="6"] { transition-delay: 300ms; }
+
+/* ============================================================
+   HERO ANIMATIONS
+   ============================================================ */
+.hero-text-reveal {
+  animation: hero-reveal 0.8s var(--ease-out) both;
+}
+
+.hero-sub-reveal {
+  animation: hero-reveal 0.6s var(--ease-out) 0.4s both;
+}
+
+.hero-cta-reveal {
+  animation: hero-reveal 0.6s var(--ease-out) 0.7s both;
+}
+
+@keyframes hero-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* ============================================================
+   GLITCH TEXT EFFECT
+   ============================================================ */
+.glitch {
+  position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: var(--text-primary);
+}
+
+.glitch::before {
+  left: 2px;
+  text-shadow: -2px 0 var(--accent);
+  clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+  animation: glitch-1 3s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+  left: -2px;
+  text-shadow: 2px 0 #ff004d;
+  clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+  animation: glitch-2 2.5s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-1 {
+  0%, 90%, 100% { transform: none; }
+  92% { transform: translate(-2px, 1px) skewX(-2deg); }
+  94% { transform: translate(2px, -1px) skewX(1deg); }
+  96% { transform: translate(0, 1px); }
+}
+
+@keyframes glitch-2 {
+  0%, 90%, 100% { transform: none; }
+  91% { transform: translate(2px, -1px) skewX(1deg); }
+  93% { transform: translate(-2px, 1px) skewX(-2deg); }
+  95% { transform: none; }
+}
+
+/* ============================================================
+   GEOMETRIC SPHERE ROTATION
+   ============================================================ */
+.geo-sphere {
+  animation: sphere-rotate 60s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes sphere-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   LIGHTBOX ANIMATION
+   ============================================================ */
+.lightbox-enter {
+  animation: lightbox-in var(--duration-base) var(--ease-out);
+}
+
+.lightbox-exit {
+  animation: lightbox-out var(--duration-fast) var(--ease-out);
+}
+
+@keyframes lightbox-in {
+  from { opacity: 0; backdrop-filter: blur(0); }
+  to   { opacity: 1; backdrop-filter: blur(12px); }
+}
+
+@keyframes lightbox-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.lightbox-image-enter {
+  animation: lightbox-img-in var(--duration-slow) var(--ease-spring);
+}
+
+@keyframes lightbox-img-in {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+/* ============================================================
+   FILTER TAB TRANSITION
+   ============================================================ */
+.filter-content-exit {
+  animation: filter-out var(--duration-fast) var(--ease-out) forwards;
+}
+
+.filter-content-enter {
+  animation: filter-in var(--duration-base) var(--ease-out);
+}
+
+@keyframes filter-out {
+  to { opacity: 0; transform: translateY(8px); }
+}
+
+@keyframes filter-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   CURSOR BLINK (for scramble text placeholder)
+   ============================================================ */
+.cursor-blink::after {
+  content: '|';
+  animation: blink 0.8s step-end infinite;
+  color: var(--accent);
+  font-weight: 300;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
