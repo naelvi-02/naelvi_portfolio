@@ -28,7 +28,7 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
       id={`project-card-${project.slug}`}
     >
       {/* Thumbnail */}
-      <div className="proj-card__thumb" style={{ aspectRatio }}>
+      <div className="proj-card__thumb texture-foil" style={{ aspectRatio }}>
         {project.thumbnail ? (
           <Image
             src={project.thumbnail}
@@ -38,7 +38,7 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
             className="proj-card__img"
           />
         ) : (
-          <div className="proj-card__placeholder texture-foil">
+          <div className="proj-card__placeholder">
             <span className="proj-card__placeholder-letter">
               {project.title.charAt(0)}
             </span>
@@ -141,6 +141,11 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
           border-color: var(--accent);
         }
 
+        .proj-card__thumb.texture-foil::after {
+          opacity: 0.4;
+          mix-blend-mode: color-dodge; /* Better blend for images */
+        }
+
         .proj-card__img {
           object-fit: cover;
           filter: grayscale(1) contrast(1.2);
@@ -161,10 +166,6 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
           align-items: center;
           justify-content: center;
           position: relative;
-        }
-
-        .proj-card__placeholder.texture-foil::after {
-           opacity: 0.25; /* make it a bit stronger here */
         }
 
         .proj-card__placeholder-letter {

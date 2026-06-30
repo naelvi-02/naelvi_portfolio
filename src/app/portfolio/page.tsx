@@ -23,7 +23,7 @@ export default async function PortfolioPage() {
                 <span className="portfolio-header__line" aria-hidden="true" />
                 <span className="portfolio-header__pre-label">Selected works</span>
               </div>
-              <h1 className="portfolio-header__title">Portfolio</h1>
+              <h1 className="portfolio-header__title text-texture-foil">Portfolio</h1>
             </div>
             <p className="portfolio-header__desc">
               Design, video, and app projects crafted with purpose.<br />

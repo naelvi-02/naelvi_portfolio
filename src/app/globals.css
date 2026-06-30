@@ -193,6 +193,15 @@
   z-index: 1;
 }
 
+.text-texture-foil {
+  background-image: url('/images/foil.jpg');
+  background-size: cover;
+  background-position: center;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent !important;
+}
+
 
 /* ============================================================
    CSS RESET & BASE
