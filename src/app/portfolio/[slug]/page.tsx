@@ -3,6 +3,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { getProjectBySlug, getProjects } from '@/lib/projects'
 
+import AutomatorDemo from '@/components/portfolio/demos/AutomatorDemo'
+import RenamerDemo from '@/components/portfolio/demos/RenamerDemo'
+import LuminaDemo from '@/components/portfolio/demos/LuminaDemo'
+
 export async function generateStaticParams() {
   const projects = await getProjects()
   return projects.map((p) => ({
@@ -24,6 +28,12 @@ export default async function ProjectDetailPage(props: { params: Promise<{ slug:
   const params = await props.params;
   const project = await getProjectBySlug(params.slug)
   if (!project) notFound()
+
+  // Determine which demo to show
+  let DemoComponent = null
+  if (project.slug === 'marketplace-automator') DemoComponent = <AutomatorDemo />
+  if (project.slug === 'barcode-renamer') DemoComponent = <RenamerDemo />
+  if (project.slug === 'lumina-studio') DemoComponent = <LuminaDemo />
 
   return (
     <div className="page-enter" style={{ paddingTop: 'var(--nav-height)' }}>
@@ -63,17 +73,26 @@ export default async function ProjectDetailPage(props: { params: Promise<{ slug:
       {/* Main Content */}
       <section className="section">
         <div className="container">
-          {project.thumbnail && (
-            <div className="proj-detail-hero-img">
-              <Image 
-                src={project.thumbnail} 
-                alt={project.title} 
-                width={1200}
-                height={800}
-                className="img-fluid"
-              />
-            </div>
-          )}
+          <div className="proj-detail-hero-media" style={{ marginBottom: 'var(--space-16)' }}>
+            {DemoComponent ? (
+              <div style={{ padding: '24px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '12px' }}>
+                <div style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>
+                  [ Interactive UI Prototype ]
+                </div>
+                {DemoComponent}
+              </div>
+            ) : project.thumbnail ? (
+              <div className="proj-detail-hero-img">
+                <Image 
+                  src={project.thumbnail} 
+                  alt={project.title} 
+                  width={1200}
+                  height={800}
+                  className="img-fluid"
+                />
+              </div>
+            ) : null}
+          </div>
 
           <div className="proj-detail-content">
             <div className="proj-detail-desc">
