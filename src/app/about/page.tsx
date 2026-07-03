@@ -14,7 +14,8 @@ export default async function AboutPage() {
     'about_location',
     'about_experience',
     'about_skills',
-    'about_tools'
+    'about_tools',
+    'about_photo'
   ])
   
   const skills = content.about_skills
@@ -36,7 +37,7 @@ export default async function AboutPage() {
   return (
     <div className="page-enter" style={{ paddingTop: 'var(--nav-height)' }}>
       {/* Hero strip */}
-      <AboutHero tagline={content.about_tagline || ''} location={content.about_location || ''} />
+      <AboutHero tagline={content.about_tagline || ''} location={content.about_location || ''} photo={content.about_photo} />
 
       {/* Bio */}
       <section className="section section--sm about-bio" data-animate>

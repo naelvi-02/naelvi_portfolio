@@ -21,7 +21,12 @@ const YEARS = Array.from({ length: 20 }, (_, i) => String(new Date().getFullYear
 export default function ExperienceEditor({ initialData }: { initialData: string }) {
   let initialParsed: ExperienceItem[] = []
   try {
-    initialParsed = JSON.parse(initialData)
+    const parsed = JSON.parse(initialData)
+    initialParsed = Array.isArray(parsed) ? parsed.map((item: any, i: number) => ({
+      ...item,
+      id: item.id || `exp-${Date.now()}-${i}`,
+      accomplishments: Array.isArray(item.accomplishments) ? item.accomplishments : []
+    })) : []
   } catch (e) {
     initialParsed = []
   }

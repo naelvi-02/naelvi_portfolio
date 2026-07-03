@@ -2,138 +2,248 @@
 
 import { useEffect, useRef } from 'react'
 import { useMouseParallax } from '@/hooks/useMouseParallax'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&'
-const TARGET = 'NAELVI'
+gsap.registerPlugin(ScrollTrigger)
 
-function scramble(
-  el: HTMLElement,
-  target: string,
-  duration: number = 1200
-): void {
+// ─── Scramble utility ────────────────────────────────────────────────────────
+const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*<>[]{}|'
+
+function scramble(el: HTMLElement, target: string, duration = 1200): void {
   let frame = 0
   const totalFrames = Math.floor(duration / 16)
-
   const update = () => {
     frame++
     const progress = frame / totalFrames
-    const revealedChars = Math.floor(progress * target.length)
-
+    const revealed = Math.floor(progress * target.length)
     el.textContent = target
       .split('')
-      .map((char, i) => {
-        if (i < revealedChars) return char
-        return CHARS[Math.floor(Math.random() * CHARS.length)]
-      })
+      .map((char, i) => i < revealed ? char : CHARS[Math.floor(Math.random() * CHARS.length)])
       .join('')
-
-    if (frame < totalFrames) {
-      requestAnimationFrame(update)
-    } else {
-      el.textContent = target
-    }
+    if (frame < totalFrames) requestAnimationFrame(update)
+    else el.textContent = target
   }
-
   requestAnimationFrame(update)
 }
 
+// ─── Char Hover Effect (like lukebaffait.fr) ─────────────────────────────────
+function CharHover({ children, className, href, id }: { children: string; className?: string; href?: string; id?: string }) {
+  const spanRef = useRef<HTMLSpanElement>(null)
+
+  const handleEnter = () => {
+    const el = spanRef.current
+    if (!el) return
+    scramble(el, children, 400)
+  }
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        id={id}
+        className={`char-hover ${className || ''}`}
+        onMouseEnter={handleEnter}
+        data-cursor="hover"
+      >
+        <span ref={spanRef}>{children}</span>
+      </a>
+    )
+  }
+
+  return (
+    <span
+      id={id}
+      className={`char-hover ${className || ''}`}
+      onMouseEnter={handleEnter}
+    >
+      <span ref={spanRef}>{children}</span>
+    </span>
+  )
+}
+
+// ─── Scrolling ticker text ─────────────────────────────────────────────────
+const TICKER = 'GRAPHIC DESIGNER — AI SPECIALIST — SURABAYA, ID — 2025 — NAELVI — '
+
+// ─── Main Hero ───────────────────────────────────────────────────────────────
 export default function Hero() {
   const nameRef = useRef<HTMLSpanElement>(null)
-  const offset = useMouseParallax(30)
+  const heroRef = useRef<HTMLElement>(null)
+  const tickerRef = useRef<HTMLDivElement>(null)
+  const textRef = useRef<HTMLDivElement>(null)
+  const offset = useMouseParallax(25)
 
+  // GSAP entrance: stagger reveal each hero child
   useEffect(() => {
-    const el = nameRef.current
+    const ctx = gsap.context(() => {
+      const playEntrance = () => {
+        // Scramble big name text
+        const nameEl = nameRef.current
+        if (nameEl) {
+          scramble(nameEl, 'NAELVI', 1600)
+        }
+
+        gsap.fromTo('.hero-line-reveal',
+          { y: '105%', skewY: 3 },
+          { y: '0%', skewY: 0, duration: 1.1, ease: 'power4.out', stagger: 0.12 }
+        )
+        gsap.fromTo('.hero-fade-reveal',
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.1, delay: 0.7 }
+        )
+        // Stats count up
+        const statEls = document.querySelectorAll('.hero-stat__val')
+        statEls.forEach((el) => {
+          const target = parseInt(el.textContent || '0')
+          const obj = { val: 0 }
+          gsap.to(obj, {
+            val: target,
+            duration: 1.5,
+            ease: 'power2.out',
+            delay: 1.1,
+            onUpdate: () => {
+              el.textContent = Math.round(obj.val) + '+'
+            }
+          })
+        })
+      }
+
+      if ((window as any).preloaderDone) {
+        // Give a tiny frame delay for layout to settle if skipped
+        setTimeout(playEntrance, 100)
+      } else {
+        window.addEventListener('preloaderComplete', playEntrance, { once: true })
+      }
+
+      // Scroll-out: text slides up + fades as you scroll away
+      gsap.to('.hero-text', {
+        y: -80,
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: 'top top',
+          end: '50% top',
+          scrub: true,
+        }
+      })
+    }, heroRef)
+    return () => ctx.revert()
+  }, [])
+  // Ticker animation
+  useEffect(() => {
+    const el = tickerRef.current
     if (!el) return
-
-    const timeout = setTimeout(() => {
-      scramble(el, TARGET, 1400)
-    }, 200)
-
-    return () => clearTimeout(timeout)
+    const anim = gsap.to(el, {
+      x: '-50%',
+      duration: 20,
+      ease: 'none',
+      repeat: -1,
+    })
+    return () => { anim.kill() }
   }, [])
 
   return (
-    <section className="hero bg-foil" aria-label="Hero section">
-      {/* Geometric ornament */}
-      <div 
-        className="hero__geo" 
-        aria-hidden="true"
-        style={{ transform: `translate3d(${offset.x * 0.5}px, ${offset.y * 0.5 - 50}%, 0)` }}
-      >
-        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="geo-sphere">
-          <circle cx="200" cy="200" r="196" stroke="white" strokeWidth="0.4" strokeDasharray="3 6" />
-          <circle cx="200" cy="200" r="140" stroke="white" strokeWidth="0.4" />
-          <circle cx="200" cy="200" r="80" stroke="white" strokeWidth="0.4" />
-          <ellipse cx="200" cy="200" rx="196" ry="80" stroke="white" strokeWidth="0.3" strokeDasharray="2 4" />
-          <ellipse cx="200" cy="200" rx="80" ry="196" stroke="white" strokeWidth="0.3" strokeDasharray="2 4" />
-          <line x1="4" y1="200" x2="396" y2="200" stroke="white" strokeWidth="0.3" />
-          <line x1="200" y1="4" x2="200" y2="396" stroke="white" strokeWidth="0.3" />
-          <circle cx="200" cy="200" r="4" fill="white" fillOpacity="0.3" />
-        </svg>
+    <section ref={heroRef} id="hero" className="hero" aria-label="Hero section">
+      {/* Noise grain overlay */}
+      <div className="hero-noise" aria-hidden="true" />
+
+      {/* Brutalist grid lines */}
+      <div className="hero-grid" aria-hidden="true">
+        {[...Array(5)].map((_, i) => <div key={i} className="hero-grid__col" />)}
       </div>
 
-      {/* Crosshair corners */}
-      <div className="hero__corner hero__corner--tl" aria-hidden="true" />
-      <div className="hero__corner hero__corner--br" aria-hidden="true" />
+      {/* Mouse parallax background text */}
+      <div
+        className="hero-bg-text"
+        aria-hidden="true"
+        style={{ transform: `translate3d(${offset.x * 2}px, ${offset.y * 1.5}px, 0)` }}
+      >
+        NAELVI
+      </div>
 
-      <div className="container hero__content">
-        <div 
-          className="hero__text"
-          style={{ transform: `translate3d(${-offset.x}px, ${-offset.y}px, 0)` }}
+      {/* Corner marks */}
+      <span className="hero-corner hero-corner--tl" aria-hidden="true">00</span>
+      <span className="hero-corner hero-corner--tr" aria-hidden="true">©2025</span>
+      <span className="hero-corner hero-corner--bl" aria-hidden="true">SBY</span>
+      <span className="hero-corner hero-corner--br" aria-hidden="true">
+        <span className="hero-corner__dot" />
+        AVAIL
+      </span>
+
+      {/* Main content */}
+      <div className="hero-content container">
+        <div
+          className="hero-text"
+          style={{ transform: `translate3d(${-offset.x * 0.6}px, ${-offset.y * 0.6}px, 0)` }}
         >
           {/* Pre-label */}
-          <div className="hero__pre hero-text-reveal" aria-hidden="true">
-            <span className="hero__pre-line" />
-            <span className="hero__pre-label">Graphic Designer & AI Specialist</span>
+          <div className="hero-pre hero-fade-reveal" style={{ opacity: 0 }}>
+            <span className="hero-pre__line" />
+            <CharHover className="hero-pre__label">GRAPHIC DESIGNER & AI SPECIALIST</CharHover>
           </div>
 
-          {/* Main name */}
-          <h1 className="hero__name">
-            <span
-              ref={nameRef}
-              className="hero__name-text cursor-blink outline-text"
-              data-text="NAELVI"
-              aria-label="NAELVI"
-            >
-              NAELVI
+          {/* Giant name */}
+          <h1 className="hero-name">
+            <span className="hero-name__overflow">
+              <span
+                ref={nameRef}
+                className="hero-name__text hero-line-reveal"
+                data-text="NAELVI"
+                aria-label="NAELVI"
+              >
+                NAELVI
+              </span>
             </span>
           </h1>
 
-          {/* Tagline */}
-          <p className="hero__tagline hero-sub-reveal">
-            Crafting bold visuals & intelligent systems.
-            <br />
-            Based in <span className="hero__tagline-accent">Surabaya</span>, Indonesia.
-          </p>
-
-          {/* CTAs */}
-          <div className="hero__ctas hero-cta-reveal">
-            <a href="/portfolio" className="btn btn-primary" id="hero-view-work-btn">
-              View Work
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            </a>
-            <a href="/contact" className="btn btn-ghost" id="hero-contact-btn">
-              Contact Me
-            </a>
+          {/* Sub line */}
+          <div className="hero-sub">
+            <div className="hero-sub__overflow">
+              <p className="hero-sub__text hero-line-reveal">
+                Crafting bold visuals & intelligent systems.
+                <span className="hero-accent"> Based in Surabaya.</span>
+              </p>
+            </div>
           </div>
 
-          {/* Stats */}
-          <div className="hero__stats hero-cta-reveal">
+          {/* Stats bar */}
+          <div className="hero-stats hero-fade-reveal" style={{ opacity: 0 }}>
             {[
-              { value: '7+', label: 'Clients' },
-              { value: '3+', label: 'Years' },
-              { value: '20+', label: 'Projects' },
-            ].map(stat => (
-              <div key={stat.label} className="hero__stat">
-                <span className="hero__stat-value">{stat.value}</span>
-                <span className="hero__stat-label">{stat.label}</span>
+              { val: '7+', label: 'Clients' },
+              { val: '3+', label: 'Years' },
+              { val: '20+', label: 'Projects' },
+            ].map(s => (
+              <div key={s.label} className="hero-stat">
+                <span className="hero-stat__val">{s.val}</span>
+                <span className="hero-stat__label">{s.label}</span>
               </div>
             ))}
           </div>
+
+          {/* CTA buttons */}
+          <div className="hero-ctas hero-fade-reveal" style={{ opacity: 0 }}>
+            <CharHover href="/#portfolio" id="hero-view-work-btn" className="hero-cta hero-cta--primary">
+              VIEW WORK
+            </CharHover>
+            <CharHover href="/#contact" id="hero-contact-btn" className="hero-cta hero-cta--ghost">
+              LET&apos;S TALK
+            </CharHover>
+          </div>
         </div>
+      </div>
+
+      {/* Bottom ticker */}
+      <div className="hero-ticker-wrap" aria-hidden="true">
+        <div ref={tickerRef} className="hero-ticker">
+          <span>{TICKER}{TICKER}</span>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="hero-scroll hero-fade-reveal" style={{ opacity: 0 }} aria-hidden="true">
+        <span className="hero-scroll__line" />
+        <span className="hero-scroll__text">SCROLL</span>
       </div>
 
       <style>{`
@@ -141,179 +251,355 @@ export default function Hero() {
           position: relative;
           min-height: 100vh;
           display: flex;
-          align-items: center;
+          flex-direction: column;
+          justify-content: center;
           overflow: hidden;
           padding-top: var(--nav-height);
+          background: var(--bg-primary);
         }
 
-        .hero__geo {
+        /* ── Noise ── */
+        .hero-noise {
           position: absolute;
-          right: -5%;
-          top: 50%;
-          transform: translateY(-50%);
-          width: min(50vw, 600px);
-          opacity: 0.04;
+          inset: -50%;
+          width: 200%;
+          height: 200%;
           pointer-events: none;
+          z-index: 1;
+          opacity: 0.03;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+          background-size: 256px 256px;
+          animation: noise-anim 0.2s steps(1) infinite;
         }
 
-        /* Corner ornaments */
-        .hero__corner {
-          position: absolute;
-          width: 40px;
-          height: 40px;
-          opacity: 0.25;
+        @keyframes noise-anim {
+          0% { transform: translate(0, 0); }
+          10% { transform: translate(-2%, -3%); }
+          20% { transform: translate(-4%, 2%); }
+          30% { transform: translate(3%, -1%); }
+          40% { transform: translate(-1%, 4%); }
+          50% { transform: translate(4%, -2%); }
+          60% { transform: translate(-2%, 1%); }
+          70% { transform: translate(2%, 3%); }
+          80% { transform: translate(-3%, -2%); }
+          90% { transform: translate(1%, -4%); }
+          100% { transform: translate(0, 0); }
         }
 
-        .hero__corner::before,
-        .hero__corner::after {
-          content: '';
+        /* ── Grid lines ── */
+        .hero-grid {
           position: absolute;
+          inset: 0;
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          pointer-events: none;
+          z-index: 0;
+          padding: 0 var(--container-pad);
+        }
+
+        .hero-grid__col {
+          border-left: 1px solid rgba(255,255,255,0.03);
+        }
+        .hero-grid__col:last-child {
+          border-right: 1px solid rgba(255,255,255,0.03);
+        }
+
+        /* ── Background giant text ── */
+        .hero-bg-text {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-family: var(--font-display);
+          font-size: clamp(12rem, 30vw, 28rem);
+          font-weight: 900;
+          color: transparent;
+          -webkit-text-stroke: 1px rgba(0, 227, 230, 0.04);
+          text-transform: uppercase;
+          letter-spacing: -0.05em;
+          pointer-events: none;
+          z-index: 0;
+          line-height: 1;
+          white-space: nowrap;
+          user-select: none;
+        }
+
+        /* ── Corner marks ── */
+        .hero-corner {
+          position: absolute;
+          font-family: var(--font-mono);
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.2);
+          z-index: 10;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .hero-corner--tl { top: calc(var(--nav-height) + 20px); left: var(--container-pad); }
+        .hero-corner--tr { top: calc(var(--nav-height) + 20px); right: var(--container-pad); }
+        .hero-corner--bl { bottom: 60px; left: var(--container-pad); }
+        .hero-corner--br { bottom: 60px; right: var(--container-pad); }
+
+        .hero-corner__dot {
+          width: 6px;
+          height: 6px;
           background: var(--accent);
+          border-radius: 50%;
+          animation: pulse 2s infinite;
         }
 
-        .hero__corner::before {
-          width: 100%;
-          height: 1px;
+        @keyframes pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(0.6); }
         }
 
-        .hero__corner::after {
-          width: 1px;
-          height: 100%;
-        }
-
-        .hero__corner--tl {
-          top: calc(var(--nav-height) + var(--space-8));
-          left: var(--container-pad);
-        }
-
-        .hero__corner--tl::before { top: 0; left: 0; }
-        .hero__corner--tl::after  { top: 0; left: 0; }
-
-        .hero__corner--br {
-          bottom: var(--space-8);
-          right: var(--container-pad);
-        }
-
-        .hero__corner--br::before { bottom: 0; right: 0; left: auto; }
-        .hero__corner--br::after  { bottom: 0; right: 0; top: auto; left: auto; }
-
-        .hero__content {
+        /* ── Main content ── */
+        .hero-content {
           position: relative;
-          z-index: var(--z-base);
+          z-index: 5;
           padding-block: var(--space-20);
         }
 
-        .hero__text {
-          max-width: 700px;
+        .hero-text {
+          max-width: 900px;
         }
 
-        .hero__pre {
+        /* ── Pre-label ── */
+        .hero-pre {
           display: flex;
           align-items: center;
           gap: var(--space-4);
           margin-bottom: var(--space-6);
         }
 
-        .hero__pre-line {
+        .hero-pre__line {
           display: block;
-          width: 32px;
+          width: 40px;
           height: 1px;
           background: var(--accent);
+          flex-shrink: 0;
         }
 
-        .hero__pre-label {
+        .hero-pre__label, .char-hover {
           font-family: var(--font-mono);
           font-size: var(--text-xs);
           font-weight: 600;
           letter-spacing: 0.14em;
           text-transform: uppercase;
           color: var(--accent);
+          text-decoration: none;
+          cursor: none;
         }
 
-        .hero__name {
-          font-family: var(--font-display);
-          font-size: var(--text-hero);
-          font-weight: 900;
-          line-height: 0.9;
-          letter-spacing: -0.03em;
-          text-transform: uppercase;
-          color: var(--text-primary);
-          margin-bottom: var(--space-8);
+        /* ── Name ── */
+        .hero-name {
+          margin: 0 0 var(--space-6);
+          overflow: hidden;
         }
 
-        .hero__name-text {
+        .hero-name__overflow {
           display: block;
+          overflow: hidden;
         }
 
-        .hero__tagline {
-          font-size: var(--text-lg);
-          color: var(--text-secondary);
-          line-height: 1.7;
+        .hero-name__text {
+          display: block;
+          font-family: var(--font-display);
+          font-size: clamp(5rem, 16vw, 14rem);
+          font-weight: 900;
+          line-height: 0.88;
+          letter-spacing: -0.04em;
+          text-transform: uppercase;
+          color: transparent;
+          -webkit-text-stroke: 2px var(--text-primary);
+          transition: -webkit-text-stroke-color 0.3s;
+        }
+
+        .hero-name__text:hover {
+          -webkit-text-stroke-color: var(--accent);
+        }
+
+        /* ── Sub text ── */
+        .hero-sub {
           margin-bottom: var(--space-10);
-          font-weight: 400;
         }
 
-        .hero__tagline-accent {
+        .hero-sub__overflow {
+          overflow: hidden;
+        }
+
+        .hero-sub__text {
+          font-size: var(--text-xl);
+          color: var(--text-secondary);
+          line-height: 1.5;
+          margin: 0;
+        }
+
+        .hero-accent {
           color: var(--accent);
-          font-weight: 500;
+          font-weight: 600;
         }
 
-        .hero__ctas {
-          display: flex;
-          gap: var(--space-4);
-          flex-wrap: wrap;
-          margin-bottom: var(--space-12);
+        /* ── Overflow clip for reveal ── */
+        .hero-line-reveal {
+          will-change: transform;
         }
 
-        .hero__stats {
+        /* ── Stats ── */
+        .hero-stats {
           display: flex;
-          gap: var(--space-8);
+          gap: var(--space-10);
+          margin-bottom: var(--space-10);
           padding-top: var(--space-8);
           border-top: 1px solid var(--border);
         }
 
-        .hero__stat {
+        .hero-stat {
           display: flex;
           flex-direction: column;
           gap: 2px;
         }
 
-        .hero__stat-value {
+        .hero-stat__val {
           font-family: var(--font-display);
-          font-size: var(--text-2xl);
+          font-size: var(--text-3xl);
           font-weight: 900;
           color: var(--text-primary);
           line-height: 1;
         }
 
-        .hero__stat-label {
+        .hero-stat__label {
           font-family: var(--font-mono);
           font-size: var(--text-xs);
           color: var(--text-muted);
-          letter-spacing: 0.08em;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
         }
 
-        @media (max-width: 768px) {
-          .hero__geo {
-            right: -20%;
-            opacity: 0.03;
-            width: 80vw;
-          }
-
-          .hero__stats {
-            gap: var(--space-6);
-          }
+        /* ── CTAs ── */
+        .hero-ctas {
+          display: flex;
+          gap: var(--space-4);
+          flex-wrap: wrap;
         }
 
-        @media (max-width: 480px) {
-          .hero__ctas {
-            flex-direction: column;
-          }
+        .hero-cta {
+          display: inline-flex;
+          align-items: center;
+          padding: 14px 28px;
+          font-family: var(--font-mono);
+          font-size: var(--text-sm);
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          text-decoration: none;
+          cursor: none;
+          transition: box-shadow 0.2s, transform 0.2s;
+          border: 3px solid;
+        }
 
-          .hero__ctas .btn {
-            justify-content: center;
-          }
+        .hero-cta--primary {
+          background: var(--accent);
+          color: var(--bg-primary);
+          border-color: var(--text-primary);
+          box-shadow: 5px 5px 0 var(--text-primary);
+        }
+
+        .hero-cta--primary:hover {
+          box-shadow: 8px 8px 0 var(--text-primary);
+          transform: translate(-3px, -3px);
+        }
+
+        .hero-cta--ghost {
+          background: transparent;
+          color: var(--text-primary);
+          border-color: var(--border);
+          box-shadow: 5px 5px 0 var(--border);
+        }
+
+        .hero-cta--ghost:hover {
+          border-color: var(--accent);
+          color: var(--accent);
+          box-shadow: 8px 8px 0 var(--accent);
+          transform: translate(-3px, -3px);
+        }
+
+        /* ── Ticker ── */
+        .hero-ticker-wrap {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          overflow: hidden;
+          border-top: 1px solid var(--border);
+          height: 40px;
+          z-index: 5;
+          background: var(--bg-primary);
+          display: flex;
+          align-items: center;
+        }
+
+        .hero-ticker {
+          display: flex;
+          white-space: nowrap;
+          width: max-content;
+        }
+
+        .hero-ticker span {
+          font-family: var(--font-mono);
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--text-muted);
+          padding: 0 2em;
+        }
+
+        /* ── Scroll indicator ── */
+        .hero-scroll {
+          position: absolute;
+          right: var(--container-pad);
+          bottom: 50px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          z-index: 10;
+        }
+
+        .hero-scroll__line {
+          display: block;
+          width: 1px;
+          height: 60px;
+          background: linear-gradient(to bottom, transparent, var(--accent));
+          animation: scroll-line 2s ease-in-out infinite;
+        }
+
+        @keyframes scroll-line {
+          0%, 100% { opacity: 0.3; transform: scaleY(0.5); transform-origin: top; }
+          50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+        }
+
+        .hero-scroll__text {
+          font-family: var(--font-mono);
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: 0.2em;
+          color: var(--text-muted);
+          writing-mode: vertical-rl;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+          .hero-bg-text { display: none; }
+          .hero-corner--tr, .hero-corner--br { display: none; }
+          .hero-stats { gap: var(--space-6); }
+          .hero-ctas { flex-direction: column; }
+          .hero-cta { justify-content: center; }
+          .hero-scroll { display: none; }
         }
       `}</style>
     </section>

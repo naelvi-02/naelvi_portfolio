@@ -2,29 +2,46 @@
 
 import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export default function ScrollReveal() {
   const pathname = usePathname()
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible')
-            observer.unobserve(entry.target)
+    // Small delay so Lenis is ready
+    const timeout = setTimeout(() => {
+      // Find all elements that need reveal
+      const elements = document.querySelectorAll('[data-animate]')
+
+      elements.forEach((el) => {
+        gsap.fromTo(el,
+          { y: 40, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 88%',
+              toggleActions: 'play none none none',
+            }
           }
-        })
-      },
-      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
-    )
+        )
+      })
 
-    // Observe all [data-animate] elements
-    const elements = document.querySelectorAll('[data-animate]')
-    elements.forEach(el => observer.observe(el))
+      ScrollTrigger.refresh()
+    }, 400)
 
-    return () => observer.disconnect()
-  }, [pathname]) // Re-run on route change
+    return () => {
+      clearTimeout(timeout)
+      ScrollTrigger.getAll().forEach(st => st.kill())
+    }
+  }, [pathname])
 
   return null
 }
+

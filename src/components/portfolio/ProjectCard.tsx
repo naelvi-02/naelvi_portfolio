@@ -3,6 +3,8 @@
 import Image from 'next/image'
 import type { Project } from '@/types'
 import { getCategoryLabel } from '@/lib/utils'
+import { useMouseParallax } from '@/hooks/useMouseParallax'
+import Magnetic from '@/components/ui/Magnetic'
 
 interface ProjectCardProps {
   project: Project
@@ -14,6 +16,7 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
   const categoryClass = `badge-${project.category}`
   const isVideo = project.category === 'video'
   const aspectRatio = isVideo ? '16/9' : '4/3'
+  const offset = useMouseParallax(15) // subtle parallax
 
   return (
     <article
@@ -36,6 +39,7 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1200px) 33vw, 25vw"
             className="proj-card__img"
+            style={{ transform: `scale(1.1) translate3d(${-offset.x}px, ${-offset.y}px, 0)` }}
           />
         ) : (
           <div className="proj-card__placeholder">
@@ -62,21 +66,25 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
 
         {/* Action hint */}
         <div className="proj-card__action" aria-hidden="true">
-          {project.category === 'design' && (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M15 3h6v6M14 10l6.1-6.1M9 21H3v-6M10 14l-6.1 6.1"/>
-            </svg>
-          )}
-          {project.category === 'video' && (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <polygon points="5 3 19 12 5 21 5 3"/>
-            </svg>
-          )}
-          {project.category === 'app' && (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-            </svg>
-          )}
+          <Magnetic>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+              {project.category === 'design' && (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M15 3h6v6M14 10l6.1-6.1M9 21H3v-6M10 14l-6.1 6.1"/>
+                </svg>
+              )}
+              {project.category === 'video' && (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+              )}
+              {project.category === 'app' && (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                </svg>
+              )}
+            </div>
+          </Magnetic>
         </div>
 
         {/* Video play badge */}
@@ -132,7 +140,7 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
         .proj-card__thumb {
           position: relative;
           overflow: hidden;
-          background: var(--bg-elevated);
+          background: var(--accent);
           border-bottom: 2px solid var(--border);
           transition: border-color var(--duration-fast);
         }
@@ -144,13 +152,14 @@ export default function ProjectCard({ project, onClick, index = 0 }: ProjectCard
         .proj-card__img {
           object-fit: cover;
           filter: grayscale(1) contrast(1.2);
-          opacity: 0.7;
-          transition: transform var(--duration-slow) var(--ease-out), filter var(--duration-base), opacity var(--duration-base);
+          opacity: 0.8;
+          mix-blend-mode: normal;
+          transition: filter var(--duration-base), opacity var(--duration-base), mix-blend-mode var(--duration-base);
         }
 
         .proj-card:hover .proj-card__img {
-          transform: scale(1.05);
-          filter: grayscale(0) contrast(1);
+          filter: grayscale(1) contrast(1.5);
+          mix-blend-mode: multiply;
           opacity: 1;
         }
 

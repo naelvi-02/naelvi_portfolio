@@ -2,10 +2,12 @@
 
 import { useEffect, useCallback } from 'react'
 import Image from 'next/image'
-import type { Project } from '@/types'
+import gsap from 'gsap'
+import type { MediaItem, Project } from '@/types'
 
 interface LightboxProps {
   project: Project
+  media: MediaItem[]
   imageIndex: number
   onClose: () => void
   onPrev: () => void
@@ -15,12 +17,29 @@ interface LightboxProps {
 
 export default function Lightbox({
   project,
+  media,
   imageIndex,
   onClose,
   onPrev,
   onNext,
   totalImages,
 }: LightboxProps) {
+  // GSAP Glitch Entrance
+  useEffect(() => {
+    const tl = gsap.timeline()
+    tl.fromTo('.lightbox', 
+      { opacity: 0 },
+      { opacity: 1, duration: 0.1, ease: 'none' }
+    )
+    tl.fromTo('.lightbox__img-wrap',
+      { scale: 0.9, opacity: 0, filter: 'contrast(2) hue-rotate(90deg) blur(4px)' },
+      { scale: 1.05, opacity: 1, duration: 0.05, ease: 'none' }
+    )
+    .to('.lightbox__img-wrap', { x: 15, skewX: -5, filter: 'contrast(1.5) hue-rotate(-90deg) blur(0px)', duration: 0.05 })
+    .to('.lightbox__img-wrap', { x: -15, skewX: 5, duration: 0.05 })
+    .to('.lightbox__img-wrap', { scale: 1, x: 0, skewX: 0, filter: 'contrast(1) hue-rotate(0deg) blur(0px)', duration: 0.1, ease: 'power2.out' })
+  }, [])
+
   // Keyboard navigation
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -32,23 +51,15 @@ export default function Lightbox({
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose, onPrev, onNext])
 
-  // Build image list: thumbnail + media images
-  const images = [
-    ...(project.thumbnail ? [{ url: project.thumbnail, caption: project.title }] : []),
-    ...project.media
-      .filter(m => m.type === 'image')
-      .map(m => ({ url: m.url, caption: m.caption ?? '' })),
-  ]
-
-  const current = images[imageIndex] ?? images[0]
+  const current = media[imageIndex] ?? media[0]
   if (!current) return null
 
   return (
     <div
-      className="lightbox lightbox-enter"
+      className="lightbox"
       role="dialog"
       aria-modal="true"
-      aria-label={`Image viewer: ${project.title}`}
+      aria-label="Media viewer"
       onClick={onClose}
     >
       {/* Close */}
@@ -71,23 +82,30 @@ export default function Lightbox({
         </div>
       )}
 
-      {/* Image */}
-      <div
-        className="lightbox__img-wrap lightbox-image-enter"
-        onClick={e => e.stopPropagation()}
-      >
-        <Image
-          src={current.url}
-          alt={current.caption || project.title}
-          fill
-          sizes="95vw"
-          className="lightbox__img"
-          priority
-        />
+      {/* Media */}
+      <div className="lightbox__img-wrap lightbox-image-enter">
+        {current.type === 'video' ? (
+          <video
+            src={current.url}
+            controls
+            autoPlay
+            className="lightbox__img"
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          />
+        ) : (
+          <Image
+            src={current.url}
+            alt={current.caption || 'Media'}
+            fill
+            sizes="95vw"
+            className="lightbox__img"
+            priority
+          />
+        )}
       </div>
 
       {/* Caption */}
-      {current.caption && current.caption !== project.title && (
+      {current.caption && (
         <div className="lightbox__caption" onClick={e => e.stopPropagation()}>
           {current.caption}
         </div>

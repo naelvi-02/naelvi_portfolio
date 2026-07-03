@@ -6,6 +6,8 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import ScrollReveal from '@/components/layout/ScrollReveal'
 import CustomCursor from '@/components/layout/CustomCursor'
+import SmoothScroller from '@/components/layout/SmoothScroller'
+import Preloader from '@/components/layout/Preloader'
 
 export const metadata: Metadata = {
 
@@ -46,13 +48,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <Navbar />
-        <main id="main-content">
-          {children}
-        </main>
-        <Footer />
-        <ScrollReveal />
-        <CustomCursor />
+        <Preloader />
+        <SmoothScroller>
+          <Navbar />
+          <main id="main-content">
+            {children}
+          </main>
+          <Footer />
+          <ScrollReveal />
+          <CustomCursor />
+        </SmoothScroller>
       </body>
     </html>
   )

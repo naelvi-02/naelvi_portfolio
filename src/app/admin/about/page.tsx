@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { getContentMany } from '@/lib/content'
 import ContentForm from '@/components/admin/ContentForm'
 import ExperienceEditor from '@/components/admin/ExperienceEditor'
+import PhotoUploader from '@/components/admin/PhotoUploader'
 
 export default async function AdminAboutPage() {
   const session = await getSession()
@@ -15,7 +16,8 @@ export default async function AdminAboutPage() {
     'about_location',
     'about_experience',
     'about_skills',
-    'about_tools'
+    'about_tools',
+    'about_photo'
   ]
   const data = await getContentMany(keys)
 
@@ -39,6 +41,10 @@ export default async function AdminAboutPage() {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
+        <section>
+          <PhotoUploader initialPhoto={data.about_photo} />
+        </section>
+
         <section>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', marginBottom: 'var(--space-6)', paddingBottom: 'var(--space-2)', borderBottom: '1px solid var(--border)' }}>
             General Info

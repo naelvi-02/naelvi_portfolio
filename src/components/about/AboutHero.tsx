@@ -5,9 +5,10 @@ import { useMouseParallax } from '@/hooks/useMouseParallax'
 interface AboutHeroProps {
   tagline: string
   location: string
+  photo?: string
 }
 
-export default function AboutHero({ tagline, location }: AboutHeroProps) {
+export default function AboutHero({ tagline, location, photo }: AboutHeroProps) {
   const offset = useMouseParallax(20)
 
   return (
@@ -31,8 +32,12 @@ export default function AboutHero({ tagline, location }: AboutHeroProps) {
           className="about-hero__photo-wrap"
           style={{ transform: `translate3d(${offset.x * 1.5}px, ${offset.y * 1.5}px, 0)` }}
         >
-          <div className="about-hero__photo" aria-label="Photo of Naufal Abdullah Almahdi">
-            <span className="about-hero__photo-initials">NA</span>
+          <div className="about-hero__photo" aria-label="Photo of Naufal Abdullah Almahdi" style={{ position: 'relative' }}>
+            {photo ? (
+              <img src={photo} alt="Naufal Abdullah Almahdi" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <span className="about-hero__photo-initials">NA</span>
+            )}
           </div>
           <div className="about-hero__photo-ornament" aria-hidden="true" />
         </div>

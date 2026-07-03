@@ -122,53 +122,8 @@
    CUSTOM CURSOR
    ============================================================ */
 @media (pointer: fine) {
-  body {
-    cursor: none;
-  }
-  
-  a, button, input, textarea, select, .interactive, [data-interactive] {
+  *, *:hover {
     cursor: none !important;
-  }
-
-  .custom-cursor-outer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 32px;
-    height: 32px;
-    border: 1px solid var(--accent);
-    border-radius: 50%;
-    margin-top: -16px;
-    margin-left: -16px;
-    pointer-events: none;
-    z-index: var(--z-cursor);
-    transition: width 0.2s ease-out, height 0.2s ease-out, margin 0.2s ease-out, background 0.2s ease-out;
-    mix-blend-mode: difference;
-  }
-
-  .custom-cursor-inner {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 6px;
-    height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    margin-top: -3px;
-    margin-left: -3px;
-    pointer-events: none;
-    z-index: var(--z-cursor);
-    transition: transform 0.1s;
-    mix-blend-mode: difference;
-  }
-
-  .custom-cursor-outer.hover {
-    width: 64px;
-    height: 64px;
-    margin-top: -32px;
-    margin-left: -32px;
-    background: var(--accent);
-    opacity: 0.8;
   }
 }
 
@@ -220,7 +175,6 @@
 
 html {
   font-size: 16px;
-  scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
 }
 

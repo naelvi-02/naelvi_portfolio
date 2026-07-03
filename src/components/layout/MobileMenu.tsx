@@ -12,10 +12,10 @@ interface MobileMenuProps {
   links: NavLink[]
   isOpen: boolean
   onClose: () => void
-  pathname: string
+  activeHash: string
 }
 
-export default function MobileMenu({ links, isOpen, onClose, pathname }: MobileMenuProps) {
+export default function MobileMenu({ links, isOpen, onClose, activeHash }: MobileMenuProps) {
   return (
     <>
       <div
@@ -40,9 +40,7 @@ export default function MobileMenu({ links, isOpen, onClose, pathname }: MobileM
               key={link.href}
               href={link.href}
               className={`mobile-menu__link ${
-                (link.href === '/' ? pathname === '/' : pathname.startsWith(link.href))
-                  ? 'mobile-menu__link--active'
-                  : ''
+                activeHash === link.href ? 'mobile-menu__link--active' : ''
               }`}
               onClick={onClose}
               style={{ transitionDelay: isOpen ? `${i * 60}ms` : '0ms' }}

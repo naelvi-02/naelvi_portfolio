@@ -38,46 +38,59 @@ export default function FilterTabs({ active, onChange, counts }: FilterTabsProps
       <style>{`
         .filter-tabs {
           display: flex;
-          gap: var(--space-2);
+          gap: var(--space-4);
           flex-wrap: wrap;
         }
 
         .filter-tab {
           display: inline-flex;
-          align-items: center;
-          gap: var(--space-2);
-          padding: 8px 18px;
-          font-family: var(--font-mono);
-          font-size: var(--text-xs);
-          font-weight: 600;
-          letter-spacing: 0.08em;
+          align-items: flex-start;
+          padding: 0;
+          font-family: var(--font-display);
+          font-size: var(--text-3xl);
+          font-weight: 900;
           text-transform: uppercase;
           color: var(--text-secondary);
           background: transparent;
-          border: 1px solid var(--border);
-          border-radius: var(--radius-pill);
+          border: none;
           cursor: pointer;
-          transition:
-            color var(--duration-fast) var(--ease-out),
-            border-color var(--duration-fast) var(--ease-out),
-            background var(--duration-fast) var(--ease-out);
-          min-height: 36px;
+          transition: color var(--duration-fast), transform var(--duration-fast);
+          position: relative;
         }
 
         .filter-tab:hover {
           color: var(--text-primary);
-          border-color: var(--border-hover);
+          transform: translateY(-4px);
         }
 
         .filter-tab--active {
           color: var(--accent);
-          border-color: var(--border-accent);
-          background: var(--accent-dim);
+        }
+
+        .filter-tab:not(.filter-tab--active)::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: -5%;
+          right: -5%;
+          height: 4px;
+          background: var(--text-secondary);
+          transform: translateY(-50%) rotate(-2deg);
+          pointer-events: none;
+          transition: background var(--duration-fast);
+        }
+
+        .filter-tab:hover:not(.filter-tab--active)::after {
+          background: var(--text-primary);
         }
 
         .filter-tab__count {
-          font-size: 10px;
-          opacity: 0.7;
+          font-family: var(--font-mono);
+          font-size: var(--text-xs);
+          font-weight: 600;
+          margin-left: 8px;
+          margin-top: 8px;
+          color: inherit;
         }
       `}</style>
     </div>

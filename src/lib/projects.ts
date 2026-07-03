@@ -30,8 +30,8 @@ function parseProjectRow(row: Record<string, unknown>): Project {
  */
 export async function getProjects(category?: string): Promise<Project[]> {
   const sql = category && category !== 'all'
-    ? 'SELECT * FROM projects WHERE category = ? ORDER BY order_idx ASC, created_at DESC'
-    : 'SELECT * FROM projects ORDER BY order_idx ASC, created_at DESC'
+    ? 'SELECT * FROM projects WHERE category = ? ORDER BY year DESC, order_idx ASC, created_at DESC'
+    : 'SELECT * FROM projects ORDER BY year DESC, order_idx ASC, created_at DESC'
 
   const args = category && category !== 'all' ? [category] : []
 
@@ -44,7 +44,7 @@ export async function getProjects(category?: string): Promise<Project[]> {
  */
 export async function getFeaturedProjects(): Promise<Project[]> {
   const result = await db.execute({
-    sql: 'SELECT * FROM projects WHERE is_featured = 1 ORDER BY order_idx ASC LIMIT 6',
+    sql: 'SELECT * FROM projects WHERE is_featured = 1 ORDER BY year DESC, order_idx ASC LIMIT 6',
     args: [],
   })
   return result.rows.map(parseProjectRow)

@@ -4,9 +4,8 @@ import { useState, useEffect, useRef } from 'react'
 import type { Project, ProjectCategory } from '@/types'
 import FilterTabs from './FilterTabs'
 import ProjectCard from './ProjectCard'
-import Lightbox from './Lightbox'
-import VideoModal from './VideoModal'
 import Link from 'next/link'
+import { getLenis } from '@/components/layout/SmoothScroller'
 
 interface ProjectGridProps {
   projects: Project[]
@@ -15,10 +14,9 @@ interface ProjectGridProps {
 
 export default function ProjectGrid({ projects, initialCategory = 'all' }: ProjectGridProps) {
   const [activeCategory, setActiveCategory] = useState<ProjectCategory>(initialCategory)
-  const [lightboxProject, setLightboxProject] = useState<Project | null>(null)
-  const [lightboxImageIndex, setLightboxImageIndex] = useState(0)
-  const [videoProject, setVideoProject] = useState<Project | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
+
+
 
   // Filter projects
   const filtered = activeCategory === 'all'
@@ -52,32 +50,45 @@ export default function ProjectGrid({ projects, initialCategory = 'all' }: Proje
     return () => observer.disconnect()
   }, [filtered])
 
-  // Lock body scroll when modal open
+  // Scroll restoration for the grid
   useEffect(() => {
-    const isOpen = lightboxProject !== null || videoProject !== null
-    document.body.style.overflow = isOpen ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [lightboxProject, videoProject])
+    const savedScroll = sessionStorage.getItem('portfolioScroll')
+    if (savedScroll && savedScroll !== '0') {
+      const top = parseInt(savedScroll, 10)
+      
+      const restore = () => {
+        const lenis = getLenis()
+        if (lenis) {
+          lenis.scrollTo(top, { immediate: true })
+        } else {
+          window.scrollTo({ top, behavior: 'instant' })
+        }
+      }
+
+      // Try multiple times to ensure it wins against layout shifts or Next.js native scroll
+      restore()
+      setTimeout(restore, 100)
+      setTimeout(restore, 300)
+    }
+
+    const handleScroll = () => {
+      sessionStorage.setItem('portfolioScroll', window.scrollY.toString())
+    }
+    
+    // Add event listener after a delay to prevent saving temporary 0 positions during page load
+    const timer = setTimeout(() => {
+      window.addEventListener('scroll', handleScroll, { passive: true })
+    }, 500)
+
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
 
   function handleCardClick(project: Project) {
-    if (project.category === 'design') {
-      setLightboxProject(project)
-      setLightboxImageIndex(0)
-    } else if (project.category === 'video') {
-      setVideoProject(project)
-    } else {
-      // App: navigate to detail page
-      window.location.href = `/portfolio/${project.slug}`
-    }
+    window.location.href = `/portfolio/${project.slug}`
   }
-
-  // Lightbox image list length
-  const lightboxImages = lightboxProject
-    ? [
-        ...(lightboxProject.thumbnail ? [lightboxProject.thumbnail] : []),
-        ...lightboxProject.media.filter(m => m.type === 'image').map(m => m.url),
-      ]
-    : []
 
   return (
     <>
@@ -111,27 +122,6 @@ export default function ProjectGrid({ projects, initialCategory = 'all' }: Proje
           <p>No {activeCategory === 'all' ? '' : activeCategory + ' '}projects yet</p>
         </div>
       )}
-
-      {/* Lightbox */}
-      {lightboxProject && (
-        <Lightbox
-          project={lightboxProject}
-          imageIndex={lightboxImageIndex}
-          totalImages={lightboxImages.length}
-          onClose={() => setLightboxProject(null)}
-          onPrev={() => setLightboxImageIndex(i => Math.max(0, i - 1))}
-          onNext={() => setLightboxImageIndex(i => Math.min(lightboxImages.length - 1, i + 1))}
-        />
-      )}
-
-      {/* Video Modal */}
-      {videoProject && (
-        <VideoModal
-          project={videoProject}
-          onClose={() => setVideoProject(null)}
-        />
-      )}
-
       <style>{`
         .pgrid__filter {
           display: flex;
@@ -151,8 +141,33 @@ export default function ProjectGrid({ projects, initialCategory = 'all' }: Proje
 
         .pgrid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: var(--space-4);
+          grid-template-columns: repeat(12, 1fr);
+          gap: var(--space-6);
+          grid-auto-flow: dense;
+        }
+
+        .proj-card {
+          grid-column: span 4;
+        }
+
+        .proj-card:nth-child(5n+1) {
+          grid-column: span 8;
+        }
+        
+        .proj-card:nth-child(5n+2) {
+          grid-column: span 4;
+        }
+
+        .proj-card:nth-child(5n+3) {
+          grid-column: span 6;
+        }
+
+        .proj-card:nth-child(5n+4) {
+          grid-column: span 6;
+        }
+
+        .proj-card:nth-child(5n+5) {
+          grid-column: span 12;
         }
 
         .pgrid__empty {
@@ -172,10 +187,12 @@ export default function ProjectGrid({ projects, initialCategory = 'all' }: Proje
 
         @media (max-width: 1024px) {
           .pgrid { grid-template-columns: repeat(2, 1fr); }
+          .proj-card, .proj-card:nth-child(n) { grid-column: span 1; }
         }
 
         @media (max-width: 480px) {
-          .pgrid { grid-template-columns: repeat(2, 1fr); gap: var(--space-2); }
+          .pgrid { grid-template-columns: 1fr; gap: var(--space-4); }
+          .proj-card, .proj-card:nth-child(n) { grid-column: span 1; }
         }
       `}</style>
     </>

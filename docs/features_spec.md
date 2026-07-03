@@ -38,9 +38,8 @@
 ### Interaction per kategori:
 | Kategori | Click behaviour |
 |---|---|
-| Design | Buka Lightbox (full-screen image viewer, swipe/arrow navigasi) |
-| Video | Buka VideoModal (native `<video>` atau YouTube embed) |
-| App | Link ke `/portfolio/[slug]` halaman detail dengan demo info |
+| Design / Video / App | Link ke `/portfolio/[slug]` halaman detail dengan project brief dan gallery media |
+| Gallery (di dalam detail) | Buka Lightbox (full-screen image viewer) atau VideoModal |
 
 ---
 

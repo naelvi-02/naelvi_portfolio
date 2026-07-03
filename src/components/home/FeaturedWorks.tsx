@@ -142,10 +142,10 @@ export default function FeaturedWorks({ projects }: FeaturedWorksProps) {
         .featured__card {
           display: block;
           text-decoration: none;
-          border-radius: var(--radius-md);
+          border-radius: 0;
           overflow: hidden;
           background: var(--bg-card);
-          border: 1px solid var(--border);
+          border: 3px solid var(--border);
           transition:
             transform var(--duration-base) var(--ease-out),
             border-color var(--duration-base) var(--ease-out),
@@ -154,8 +154,8 @@ export default function FeaturedWorks({ projects }: FeaturedWorksProps) {
 
         .featured__card:hover {
           transform: translateY(-4px);
-          border-color: var(--border-accent);
-          box-shadow: 0 12px 40px rgba(0,0,0,0.4), var(--accent-glow);
+          border-color: var(--accent);
+          box-shadow: 6px 6px 0 var(--accent);
         }
 
         .featured__card--large {
